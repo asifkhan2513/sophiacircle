@@ -1,4 +1,13 @@
-import About from "../components/About";
+import { lazy } from "react";
+const About = lazy(() => import("../components/About"));
+import { Metadata } from "next";
+
+
+export const metadata: Metadata = {
+    title: "About",
+    description: "Learn about Sophia Circle, a dedicated platform for modern philosophical inquiry, community building, and timeless wisdom.",
+    keywords: ["about sophia circle", "philosophical community mission", "why study philosophy", "modern stoicism community"],
+};
 
 export default function AboutPage() {
     return (

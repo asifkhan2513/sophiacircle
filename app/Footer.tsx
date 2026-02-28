@@ -20,9 +20,11 @@ export default function Footer() {
               <a href="#" className="p-2 bg-black/5 rounded-lg hover:bg-black hover:text-white transition-all"><Github size={20} /></a>
             </div>
             <div className="flex flex-wrap justify-center gap-6 md:gap-10 text-xs font-black uppercase tracking-wider">
-              <a href="#" className="hover:underline underline-offset-4 transition-all">Privacy</a>
-              <a href="#" className="hover:underline underline-offset-4 transition-all">Terms</a>
-              <a href="#" className="hover:underline underline-offset-4 transition-all">Contact</a>
+              <a href="/about" className="hover:underline underline-offset-4 transition-all">About</a>
+              <a href="/articles" className="hover:underline underline-offset-4 transition-all">Articles</a>
+              <a href="/philosophers" className="hover:underline underline-offset-4 transition-all">Philosophers</a>
+              <a href="/quotes" className="hover:underline underline-offset-4 transition-all">Quotes</a>
+              <a href="/contact" className="hover:underline underline-offset-4 transition-all">Contact</a>
             </div>
           </div>
         </div>

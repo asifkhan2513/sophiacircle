@@ -1,5 +1,12 @@
 import Contactus from "../components/Contactus";
 import { Mail } from "lucide-react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Contact Us",
+    description: "Get in touch with the Sophia Circle community. Share your thoughts, collaborate on philosophical projects, or join our discussions.",
+    keywords: ["contact philosophy community", "join sophia circle", "philosophical collaboration", "contact deep thinkers"],
+};
 
 export default function ContactPage() {
     return (

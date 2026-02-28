@@ -1,5 +1,12 @@
 import Philosophers from "../components/Philosophers";
 import { Users } from "lucide-react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Philosophers",
+    description: "Learn about history's most influential thinkers, from Socrates and Plato to Nietzsche and Camus. Explore their lives and core ideas.",
+    keywords: ["great philosophers", "famous thinkers", "history of philosophy", "philosopher biographies", "Plato", "Aristotle", "Nietzsche"],
+};
 
 export default function PhilosophersPage() {
     return (

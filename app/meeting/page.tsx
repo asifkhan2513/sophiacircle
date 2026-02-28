@@ -1,5 +1,12 @@
 import Meeting from "../components/Meeting";
 import { Video } from "lucide-react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Meetings",
+    description: "Join our live philosophical meetings and seminars. Engage in real-time debates and learning sessions with the Sophia Circle community.",
+    keywords: ["philosophy meetings", "live discussion sessions", "philosophical seminars", "online philosophy community", "Sophia Circle meetings"],
+};
 
 export default function MeetingPage() {
     return (

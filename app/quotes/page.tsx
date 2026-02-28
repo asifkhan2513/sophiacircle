@@ -1,5 +1,12 @@
 import Quotes from "../components/Quotes";
 import { Quote } from "lucide-react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Quotes",
+    description: "A curated collection of the most profound philosophical quotes to inspire deep thinking, mindfulness, and wisdom.",
+    keywords: ["philosophy quotes", "deep quotes", "inspiring wisdom", "stoic quotes", "philosophical thoughts", "daily wisdom"],
+};
 
 export default function QuotesPage() {
     return (

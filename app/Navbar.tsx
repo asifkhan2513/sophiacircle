@@ -33,6 +33,7 @@ export default function Navbar() {
                 src={siteConfig.logo}
                 alt={siteConfig.name}
                 className="h-full w-full object-cover"
+                loading="eager"
               />
             </div>
             <span className={`text-lg md:text-xl font-bold tracking-tight transition-colors duration-300 ${navTextColor}`}>
