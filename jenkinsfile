@@ -1,0 +1,54 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_IMAGE = "sophiacircle"
+        GITHUB_URL = "https://github.com/asifkhan2513/sophiacircle.git"
+    }
+
+    stages {
+        stage('Fetch') {
+            steps {
+                echo 'Fetching source code from GitHub...'
+                // Using git command. If private, this might need credentials.
+                git branch: 'main', url: "${GITHUB_URL}"
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo 'Building Docker image...'
+                sh "docker build -t ${DOCKER_IMAGE} ."
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Running basic tests (linting)...'
+                // Running linting as a basic test stage
+                sh "docker run --rm ${DOCKER_IMAGE} npm run lint"
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo 'Deploying to Docker using Docker Compose...'
+                // Stop and remove existing containers, then start new ones
+                sh "docker compose down || true"
+                sh "docker compose up -d"
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline finished.'
+        }
+        success {
+            echo 'Deployment successful to port 3000!'
+        }
+        failure {
+            echo 'Deployment failed.'
+        }
+    }
+}
