@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { routes, siteConfig } from "./config";
 import { LogOut, User, LayoutDashboard } from "lucide-react";
 import toast from "react-hot-toast";
+import Image from "next/image";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -68,11 +69,13 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3 group">
             <div className="relative h-10 w-10 md:h-12 md:w-12 overflow-hidden rounded-full border border-black/10 transition-all group-hover:scale-105 bg-white/10 backdrop-blur-sm">
-              <img
+              <Image
                 src={siteConfig.logo}
                 alt={siteConfig.name}
                 className="h-full w-full object-cover"
                 loading="eager"
+                width={100}
+                height={100}
               />
             </div>
             <span className={`text-lg md:text-xl font-bold tracking-tight transition-colors duration-300 ${navTextColor}`}>

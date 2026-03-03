@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { siteConfig } from '../config';
+import Image from 'next/image';
 
 export default function Signup() {
     const [formData, setFormData] = useState({
@@ -73,7 +74,7 @@ export default function Signup() {
             <div className="bg-white p-8 md:p-12 rounded-[3rem] shadow-2xl border border-black/5">
                 <div className="flex flex-col items-center mb-10">
                     <div className="w-16 h-16 rounded-2xl overflow-hidden mb-6 shadow-xl">
-                        <img src={siteConfig.logo} alt="Logo" className="w-full h-full object-cover" />
+                        <Image src={siteConfig.logo} alt="Logo" className="w-full h-full object-cover" />
                     </div>
                     <h2 className="text-4xl font-black tracking-tight mb-2 text-center">Join Sophia Circle</h2>
                     <p className="text-black/60 font-medium text-center">Start your philosophical journey today</p>
