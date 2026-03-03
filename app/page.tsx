@@ -5,7 +5,7 @@ import { siteConfig, routes } from "./config";
 
 // ---- SEO Metadata for the Home page (App Router) ----
 export const metadata: Metadata = {
-  title: "Sophia Circle — A Philosophical Community Platform",
+  title: "Home",
   description:
     "Join Sophia Circle, a thriving philosophical community for deep discussions, Stoicism, Existentialism, and wisdom from history's greatest thinkers.",
   keywords: [
@@ -109,10 +109,10 @@ export default function Home() {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6">
             <Link
-              href="/about"
+              href="/philosophers"
               className="w-full sm:w-auto px-8 md:px-10 py-4 md:py-5 bg-white text-black font-bold rounded-2xl hover:scale-105 transition-all duration-300 shadow-2xl"
             >
-              Explore Philosophy
+              Explore Philosophers
             </Link>
 
             <Link

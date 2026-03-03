@@ -1,4 +1,13 @@
-import { Home, Info, BookOpen, Mail, Video, Users, Quote } from "lucide-react";
+import {
+  Home,
+  Info,
+  BookOpen,
+  Mail,
+  Video,
+  Users,
+  User,
+  LayoutDashboard,
+} from "lucide-react";
 
 // Define all path routes here
 export const routes = [
@@ -9,22 +18,10 @@ export const routes = [
     icon: Home,
   },
   {
-    name: "About",
-    path: "/about",
-    component: "About",
-    icon: Info,
-  },
-  {
-    name: "Articles",
-    path: "/articles",
-    component: "Articles",
-    icon: BookOpen,
-  },
-  {
-    name: "Contact Us",
-    path: "/contact",
-    component: "Contactus",
-    icon: Mail,
+    name: "Explore",
+    path: "/explore",
+    component: "Explore",
+    icon: Users,
   },
   {
     name: "Meeting",
@@ -33,16 +30,40 @@ export const routes = [
     icon: Video,
   },
   {
-    name: "Philosophers",
-    path: "/philosophers",
-    component: "Philosophers",
-    icon: Users,
+    name: "Articles",
+    path: "/articles",
+    component: "Articles",
+    icon: BookOpen,
   },
   {
-    name: "Quotes",
-    path: "/quotes",
-    component: "Quotes",
-    icon: Quote,
+    name: "About",
+    path: "/about",
+    component: "About",
+    icon: Info,
+  },
+  {
+    name: "Contact Us",
+    path: "/contact",
+    component: "Contactus",
+    icon: Mail,
+  },
+  {
+    name: "Login",
+    path: "/login",
+    component: "Login",
+    icon: User,
+  },
+  {
+    name: "Signup",
+    path: "/signup",
+    component: "Signup",
+    icon: User,
+  },
+  {
+    name: "Dashboard",
+    path: "/dashboard",
+    component: "Dashboard",
+    icon: LayoutDashboard,
   },
 ];
 

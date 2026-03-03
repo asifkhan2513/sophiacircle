@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://sophiacircle.vercel.app"),
   title: {
-    default: "Sophia Circle — A Philosophical Community Platform",
-    template: "%s — Sophia Circle",
+    default: "Sophia Circle: A Philosophical Community Platform",
+    template: "Sophia Circle: %s",
   },
   description:
     "Sophia Circle is a philosophical community platform for discussions, articles, quotes, meetings, and learning from great thinkers.",
@@ -77,6 +78,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased min-h-screen bg-background selection:bg-accent/20">
+        <Toaster position="top-center" />
         <div className="flex flex-col min-h-screen">
           <Navbar />
           <div className="flex-grow">

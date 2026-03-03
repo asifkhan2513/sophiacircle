@@ -1,7 +1,7 @@
 import React from 'react'
 import { MessageCircle, Send, Mail, Disc, Linkedin, Instagram } from "lucide-react";
 
-export default function Philosophers() {
+export default function Explore() {
   const socialLinks = [
     { icon: MessageCircle, href: "https://wa.me/", title: "WhatsApp" },
     { icon: Send, href: "https://t.me/", title: "Telegram" },

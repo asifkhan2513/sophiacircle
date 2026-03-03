@@ -1,4 +1,4 @@
-import Quotes from "../components/Quotes";
+import Quotes from "../components/Login";
 import { Quote } from "lucide-react";
 import { Metadata } from "next";
 
