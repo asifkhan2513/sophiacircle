@@ -36,6 +36,7 @@ pipeline {
             steps {
                 echo 'This is Deploying Code'
                 sh 'docker compose up -d sophiacircle'
+                     echo 'This is Deploying successfull '
             }
         }
     }
