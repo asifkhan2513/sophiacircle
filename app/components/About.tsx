@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Target,
   Eye,
@@ -11,8 +11,8 @@ import {
   Cpu,
   Sun,
   Moon,
-  ArrowRight
-} from 'lucide-react';
+  ArrowRight,
+} from "lucide-react";
 
 export default function About() {
   return (
@@ -23,9 +23,13 @@ export default function About() {
           <div className="w-14 h-14 bg-black rounded-2xl flex items-center justify-center text-white mb-6">
             <Target size={28} />
           </div>
-          <h3 className="text-2xl font-black mb-4 uppercase tracking-tighter">Mission</h3>
+          <h3 className="text-2xl font-black mb-4 uppercase tracking-tighter">
+            Mission
+          </h3>
           <p className="text-black/70 leading-relaxed font-medium">
-            To cultivate a sanctuary for deep intellectual inquiry, providing the tools and community necessary to bridge the gap between ancient wisdom and modern living.
+            To cultivate a sanctuary for deep intellectual inquiry, providing
+            the tools and community necessary to bridge the gap between ancient
+            wisdom and modern living.
           </p>
         </div>
 
@@ -33,9 +37,13 @@ export default function About() {
           <div className="w-14 h-14 bg-black rounded-2xl flex items-center justify-center text-white mb-6">
             <Eye size={28} />
           </div>
-          <h3 className="text-2xl font-black mb-4 uppercase tracking-tighter">Vision</h3>
+          <h3 className="text-2xl font-black mb-4 uppercase tracking-tighter">
+            Vision
+          </h3>
           <p className="text-black/70 leading-relaxed font-medium">
-            To become the global nexus for philosophical discourse, where history's greatest ideas are revitalized to solve the complexities of the 21st century.
+            To become the global nexus for philosophical discourse, where
+            history&apos;s greatest ideas are revitalized to solve the
+            complexities of the 21st century.
           </p>
         </div>
 
@@ -43,9 +51,13 @@ export default function About() {
           <div className="w-14 h-14 bg-black rounded-2xl flex items-center justify-center text-white mb-6">
             <Compass size={28} />
           </div>
-          <h3 className="text-2xl font-black mb-4 uppercase tracking-tighter">Why We Exist</h3>
+          <h3 className="text-2xl font-black mb-4 uppercase tracking-tighter">
+            Why We Exist
+          </h3>
           <p className="text-black/70 leading-relaxed font-medium">
-            In an era of digital noise, Sophia Circle exists to restore the art of slow, meaningful thought. We provide space for those seeking depth over distraction.
+            In an era of digital noise, Sophia Circle exists to restore the art
+            of slow, meaningful thought. We provide space for those seeking
+            depth over distraction.
           </p>
         </div>
       </div>
@@ -53,8 +65,12 @@ export default function About() {
       {/* Philosophy Section */}
       <div className="space-y-12">
         <div className="text-center max-w-2xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-black tracking-tighter mb-4">Our Philosophical Framework</h2>
-          <p className="text-black/50 font-medium italic">"An unexamined life is not worth living." — Socrates</p>
+          <h2 className="text-4xl md:text-5xl font-black tracking-tighter mb-4">
+            Our Philosophical Framework
+          </h2>
+          <p className="text-black/50 font-medium italic">
+            &quot;An unexamined life is not worth living.&quot; — Socrates
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -118,9 +134,12 @@ export default function About() {
       {/* Closing Statement */}
       <div className="bg-black text-white p-12 rounded-[3.5rem] text-center shadow-2xl relative overflow-hidden group">
         <div className="absolute top-0 left-0 w-full h-full bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-        <h3 className="text-3xl md:text-5xl font-black mb-6 tracking-tighter relative z-10">Join the Circle</h3>
+        <h3 className="text-3xl md:text-5xl font-black mb-6 tracking-tighter relative z-10">
+          Join the Circle
+        </h3>
         <p className="text-xl text-white/70 max-w-2xl mx-auto mb-10 font-medium relative z-10">
-          Philosophy is not just an academic pursuit; it is a way of life. Begin your journey toward wisdom today.
+          Philosophy is not just an academic pursuit; it is a way of life. Begin
+          your journey toward wisdom today.
         </p>
         <div className="flex flex-wrap justify-center gap-4 relative z-10">
           <button className="px-8 py-4 bg-white text-black font-black rounded-2xl hover:scale-105 transition-all shadow-xl flex items-center gap-2">
@@ -132,14 +151,24 @@ export default function About() {
   );
 }
 
-function PhilosophicalCard({ icon, title, content }: { icon: React.ReactNode, title: string, content: string }) {
+function PhilosophicalCard({
+  icon,
+  title,
+  content,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  content: string;
+}) {
   return (
     <div className="group bg-white border border-black/10 p-8 rounded-[2rem] hover:border-black transition-all duration-300">
       <div className="w-12 h-12 bg-black/5 rounded-xl flex items-center justify-center mb-6 group-hover:bg-black group-hover:text-white transition-all duration-500">
         {icon}
       </div>
       <h4 className="text-xl font-black mb-3 tracking-tight">{title}</h4>
-      <p className="text-black/60 text-sm leading-relaxed font-medium">{content}</p>
+      <p className="text-black/60 text-sm leading-relaxed font-medium">
+        {content}
+      </p>
     </div>
   );
 }

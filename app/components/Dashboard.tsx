@@ -1,6 +1,5 @@
 "use client";
-
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useMemo, lazy, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import {
     LogOut,
@@ -20,7 +19,8 @@ import {
     Trash2
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import CreateArticle from './CreateArticle';
+const CreateArticle = lazy(() => import('./CreateArticle'));
+const Loader = lazy(() => import('../loading'));
 
 export default function Dashboard() {
     const [user, setUser] = useState<any>(null);
@@ -32,12 +32,12 @@ export default function Dashboard() {
     // Set target date to 20 days from now
     const targetDate = new Date("2026-03-23T00:00:00Z");
 
-    const fetchArticles = () => {
+    const fetchArticles = useCallback(() => {
         const articles = JSON.parse(localStorage.getItem('user_articles') || '[]');
         const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
         const filtered = articles.filter((a: any) => a.authorEmail === currentUser.email);
         setUserArticles(filtered);
-    };
+    }, []);
 
     useEffect(() => {
         const isLoggedIn = localStorage.getItem('isLoggedIn');
@@ -69,15 +69,15 @@ export default function Dashboard() {
         return () => clearInterval(timer);
     }, [router]);
 
-    const handleLogout = () => {
+    const handleLogout = useCallback(() => {
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('currentUser');
         toast.success('Logged out successfully');
         router.push('/login');
         router.refresh();
-    };
+    }, [router]);
 
-    const handleDeleteArticle = (articleId: number) => {
+    const handleDeleteArticle = useCallback((articleId: number) => {
         if (window.confirm('Are you sure you want to delete this article?')) {
             const articles = JSON.parse(localStorage.getItem('user_articles') || '[]');
             const updated = articles.filter((a: any) => a.id !== articleId);
@@ -85,7 +85,12 @@ export default function Dashboard() {
             fetchArticles();
             toast.success('Article deleted');
         }
-    };
+    }, [fetchArticles]);
+
+    const stats = useMemo(() => [
+        { label: 'My Articles', value: userArticles.length, icon: BookOpen },
+        { label: 'Meetings', value: '4', icon: Bell },
+    ], [userArticles.length]);
 
     if (!user) return null;
 
@@ -152,10 +157,7 @@ export default function Dashboard() {
 
                     {/* Compact Stats */}
                     <div className="grid grid-cols-2 gap-4">
-                        {[
-                            { label: 'My Articles', value: userArticles.length, icon: BookOpen },
-                            { label: 'Meetings', value: '4', icon: Bell },
-                        ].map((stat, i) => (
+                        {stats.map((stat, i) => (
                             <div key={i} className="bg-white p-6 rounded-[2rem] shadow-lg border border-black/5 hover:shadow-xl transition-all">
                                 <stat.icon className="mb-2 text-black/40" size={20} />
                                 <h4 className="text-xs font-bold text-black/40 uppercase tracking-wider">{stat.label}</h4>
@@ -313,13 +315,16 @@ export default function Dashboard() {
 
             {/* Create Article Modal */}
             {isCreateModalOpen && (
-                <CreateArticle
-                    user={user}
-                    onClose={() => {
-                        setIsCreateModalOpen(false);
-                        fetchArticles(); // Refresh list after closing
-                    }}
-                />
+                <Suspense fallback={<Loader />}>
+
+                    <CreateArticle
+                        user={user}
+                        onClose={() => {
+                            setIsCreateModalOpen(false);
+                            fetchArticles(); // Refresh list after closing
+                        }}
+                    />
+                </Suspense>
             )}
         </div>
     );

@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState } from 'react';
 import {
     PenLine,
@@ -31,6 +30,21 @@ export default function CreateArticle({ onClose, user }: CreateArticleProps) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Validation
+        if (!formData.title.trim() || formData.title.length < 5) {
+            toast.error('Title must be at least 5 characters');
+            return;
+        }
+        if (!formData.excerpt.trim() || formData.excerpt.length < 10) {
+            toast.error('Excerpt must be at least 10 characters');
+            return;
+        }
+        if (!formData.content.trim() || formData.content.length < 20) {
+            toast.error('Content must be at least 20 characters');
+            return;
+        }
+
         setIsLoading(true);
 
         // Simulate article creation and storage

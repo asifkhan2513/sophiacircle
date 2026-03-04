@@ -1,4 +1,7 @@
-import Dashboard from "@/app/components/Dashboard";
+import { lazy, Suspense } from "react";
+import Loader from "@/app/loading";
+
+const Dashboard = lazy(() => import("@/app/components/Dashboard"));
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -9,7 +12,9 @@ export const metadata: Metadata = {
 export default function DashboardPage() {
     return (
         <main className="flex-grow pt-24 md:pt-32 pb-16 md:pb-24 bg-background">
-            <Dashboard />
+            <Suspense fallback={<Loader />}>
+                <Dashboard />
+            </Suspense>
         </main>
     );
 }
