@@ -1,54 +1,42 @@
 pipeline {
     agent any
 
-    environment {
-        DOCKER_IMAGE = "sophiacircle"
-        GITHUB_URL = "https://github.com/asifkhan2513/sophiacircle.git"
-    }
-
     stages {
-        stage('Fetch') {
+        stage('Cloning') {
             steps {
-                echo 'Fetching source code from GitHub...'
-                // Using git command. If private, this might need credentials.
-                git branch: 'main', url: "${GITHUB_URL}"
+                echo 'This is Cloning Code'
+                git url: 'https://github.com/asifkhan2513/sophiacircle.git', branch: 'master'
+                echo 'Code Clone Successfully'
             }
         }
 
         stage('Build') {
             steps {
-                echo 'Building Docker image...'
-                sh "docker build -t ${DOCKER_IMAGE} ."
+                echo 'This is Building Code'
+                sh 'docker build -t sophiacircle:latest .'
             }
         }
 
-        stage('Test') {
+        stage('Push to Docker Hub') {
             steps {
-                echo 'Running basic tests (linting)...'
-                // Running linting as a basic test stage
-                sh "docker run --rm ${DOCKER_IMAGE} npm run lint"
+                echo 'This is Pushing to Docker Hub'
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerHubCred',
+                    usernameVariable: 'DOCKERHUB_USERNAME',
+                    passwordVariable: 'DOCKERHUB_PASSWORD'
+                )]) {
+                    sh 'docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD'
+                    sh 'docker tag sophiacircle:latest $DOCKERHUB_USERNAME/sophiacircle:latest'
+                    sh 'docker push $DOCKERHUB_USERNAME/sophiacircle:latest'
+                }
             }
         }
 
         stage('Deploy') {
             steps {
-                echo 'Deploying to Docker using Docker Compose...'
-                // Stop and remove existing containers, then start new ones
-                sh "docker compose down || true"
-                sh "docker compose up -d"
+                echo 'This is Deploying Code'
+                sh 'docker compose up -d sophiacircle'
             }
-        }
-    }
-
-    post {
-        always {
-            echo 'Pipeline finished.'
-        }
-        success {
-            echo 'Deployment successful to port 3000!'
-        }
-        failure {
-            echo 'Deployment failed.'
         }
     }
 }

@@ -1,6 +1,6 @@
 services:
   sophiacircle:
-    image: sophiacircle
+    image: vekeb71985/sophiacircle:latest
     build:
       context: .
       dockerfile: Dockerfile

@@ -1,20 +1,23 @@
 FROM node:24-alpine
 
+# Create app directory
 WORKDIR /app
 
-# Install dependencies
-COPY package*.json ./
+# Install dependencies first (better caching)
+COPY package.json package-lock.json* ./
+
 RUN npm install
 
-# Copy the rest of the application
+# Copy the rest of the project files
 COPY . .
 
-# Expose port 3000
+# Next.js dev server port
 EXPOSE 3000
 
-# Set the host to 0.0.0.0 so it's accessible outside the container
-ENV HOSTNAME="0.0.0.0"
+# Environment variables
+ENV HOSTNAME=0.0.0.0
 ENV PORT=3000
+ENV NODE_ENV=development
 
-# Use npm run dev as requested
+# Run Next.js dev server
 CMD ["npm", "run", "dev"]
