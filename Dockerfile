@@ -1,15 +1,18 @@
-FROM node:24-alpine
+# Use the official Node.js image
+FROM node:18-alpine
+
+# Set the working directory
 WORKDIR /app
 
+# Copy package files and install dependencies
 COPY package*.json ./
+RUN npm install
 
-RUN npm install --no-audit --no-fund
-
+# Copy the rest of the application code
 COPY . .
 
+# Expose the port Next.js runs on
 EXPOSE 3000
-ENV HOSTNAME=0.0.0.0
-ENV PORT=3000
-ENV NODE_ENV=development
 
+# Run the development server
 CMD ["npm", "run", "dev"]
