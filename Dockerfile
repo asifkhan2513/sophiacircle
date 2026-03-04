@@ -1,12 +1,13 @@
-# Use the official Node.js image
-FROM node:18-alpine
+# Use the latest stable Node.js (Alpine) image
+FROM node:24-alpine
 
 # Set the working directory
 WORKDIR /app
 
 # Copy package files and install dependencies
 COPY package*.json ./
-RUN npm install
+
+RUN npm install --no-audit --no-fund --progress=false
 
 # Copy the rest of the application code
 COPY . .
