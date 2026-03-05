@@ -1,5 +1,4 @@
-"use client";
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from "react";
 import {
     PenLine,
     Type,
@@ -10,32 +9,55 @@ import {
     ArrowLeft,
     FileText,
     Sparkles,
-    Upload
-} from 'lucide-react';
-import toast from 'react-hot-toast';
-import api from '../utils/api';
+    Upload,
+    Calendar,
+    Bold,
+    Italic,
+    Link as LinkIcon,
+    Quote,
+    Code,
+    List,
+    RotateCcw,
+    RotateCw,
+    Plus,
+    ChevronRight,
+} from "lucide-react";
+import toast from "react-hot-toast";
+import api from "../utils/api";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/store";
+import Image from "next/image";
 
 interface CreateArticleProps {
     onClose: () => void;
 }
 
 export default function CreateArticle({ onClose }: CreateArticleProps) {
+    const { user } = useSelector((state: RootState) => state.auth);
     const [formData, setFormData] = useState({
-        title: '',
-        content: '',
-        category: 'General',
+        title: "",
+        content: "",
+        tags: "",
+        category: "Philosophy",
     });
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+    const currentDate = new Date().toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+    });
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') onClose();
+            if (e.key === "Escape") onClose();
         };
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
     }, [onClose]);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,189 +76,254 @@ export default function CreateArticle({ onClose }: CreateArticleProps) {
         }
     };
 
+    const insertText = (before: string, after: string = "") => {
+        if (!textareaRef.current) return;
+        const start = textareaRef.current.selectionStart;
+        const end = textareaRef.current.selectionEnd;
+        const text = formData.content;
+        const selectedText = text.substring(start, end);
+        const newText =
+            text.substring(0, start) +
+            before + selectedText + after +
+            text.substring(end);
+
+        setFormData({ ...formData, content: newText });
+
+        // Focus back and set cursor
+        setTimeout(() => {
+            textareaRef.current?.focus();
+            textareaRef.current?.setSelectionRange(
+                start + before.length,
+                end + before.length
+            );
+        }, 0);
+    };
+
+    const handleToolbarAction = (action: string) => {
+        switch (action) {
+            case "Bold": insertText("**", "**"); break;
+            case "Italic": insertText("_", "_"); break;
+            case "Quote": insertText("\n> "); break;
+            case "Code": insertText("`", "`"); break;
+            case "List": insertText("\n- "); break;
+            case "Link": insertText("[", "](url)"); break;
+            default: break;
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Validation
-        if (!formData.title.trim() || formData.title.length < 5) {
-            toast.error('Title must be at least 5 characters');
+        if (!formData.title.trim()) {
+            toast.error("Title is required");
             return;
         }
-        if (!formData.content.trim() || formData.content.length < 20) {
-            toast.error('Content must be at least 20 characters');
+        if (!formData.content.trim()) {
+            toast.error("Content is required");
             return;
         }
         if (!imageFile) {
-            toast.error('Please select an image for your article');
+            toast.error("Please select a cover image");
             return;
         }
 
         setIsLoading(true);
-
         try {
             const data = new FormData();
-            data.append('title', formData.title);
-            data.append('description', formData.content);
-            data.append('category', formData.category);
-            data.append('tags', JSON.stringify([formData.category]));
-            data.append('image', imageFile);
+            data.append("title", formData.title);
+            data.append("description", formData.content);
+            data.append("category", formData.category);
+            data.append(
+                "tags",
+                JSON.stringify(formData.tags.split(",").map((t) => t.trim()))
+            );
+            data.append("image", imageFile);
 
-            await api.post('/articles', data, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
+            await api.post("/articles", data, {
+                headers: { "Content-Type": "multipart/form-data" },
             });
 
-            toast.success('Article published successfully!');
+            toast.success("Article published successfully!");
             onClose();
         } catch (error: any) {
-            console.error("Upload error:", error);
-            toast.error(error.response?.data?.message || 'Failed to publish article');
+            toast.error(error.response?.data?.message || "Failed to publish article");
         } finally {
             setIsLoading(false);
         }
     };
 
     return (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-            {/* Backdrop */}
-            <div
-                className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
-                onClick={onClose}
-            />
+        <div className="fixed inset-0 z-40 flex flex-col pt-16 md:pt-28 pb-16 md:pb-24 bg-[#D6E6E6] overflow-y-auto">
+            {/* Navbar Overlay Logic Match */}
+            <div className="container mx-auto px-4 md:px-6 max-w-7xl animate-in fade-in duration-500">
 
-            {/* Modal */}
-            <div className="relative w-full max-w-4xl bg-white rounded-[3rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in duration-300">
-                {/* Header */}
-                <div className="px-8 py-6 border-b border-black/5 flex items-center justify-between bg-white sticky top-0 z-10">
-                    <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-white">
-                            <PenLine size={24} />
-                        </div>
-                        <div>
-                            <h2 className="text-2xl font-black tracking-tight">Create Article</h2>
-                            <p className="text-black/40 text-xs font-bold uppercase tracking-wider">Sharing your wisdom</p>
-                        </div>
-                    </div>
+                {/* Back Link Overlay like Article Detail */}
+                <div className="flex justify-start mb-8">
                     <button
                         onClick={onClose}
-                        className="p-3 hover:bg-black/5 rounded-2xl transition-colors group"
+                        className="inline-flex items-center gap-2 text-black px-4 py-2 bg-[#E7EFC7] rounded-full uppercase text-[14px] font-black tracking-widest hover:scale-105 transition-all shadow-sm hover:cursor-pointer"
                     >
-                        <X size={24} className="group-hover:rotate-90 transition-transform duration-300" />
+                        <ArrowLeft size={16} /> Back to Archive
                     </button>
                 </div>
 
-                {/* Form Body */}
-                <div className="flex-grow overflow-y-auto p-8 md:p-10">
-                    <form id="article-form" onSubmit={handleSubmit} className="space-y-8">
-                        {/* Title Input */}
-                        <div className="space-y-3">
-                            <label className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 ml-1">
-                                <Type size={16} /> Article Title
-                            </label>
-                            <input
-                                required
-                                type="text"
-                                placeholder="The Stoic perspective on modern technology..."
-                                className="w-full text-3xl md:text-4xl font-black tracking-tighter bg-transparent border-none focus:ring-0 placeholder:text-black/10 transition-all p-0"
-                                value={formData.title}
-                                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                            />
+                {/* Centered Heading Layout like screenshot */}
+                <div className="flex flex-col items-center mb-10 md:mb-16">
+                    <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-black drop-shadow-sm uppercase flex items-center gap-4 text-center">
+                        Create Article
+                    </h1>
+                    <p className="text-[10px] font-black tracking-[0.2em] text-black/40 uppercase mt-4">
+                        Published articles will be available for publicly available to all users
+                    </p>
+                </div>
+
+                {/* Top Info Bar: Date & Author */}
+                <div className="flex flex-wrap justify-center gap-8 mb-10">
+                    <div className="flex items-center gap-4">
+                        <span className="text-sm font-black uppercase tracking-widest text-[#5C5C54]">Date</span>
+                        <div className="flex items-center gap-2 bg-white px-6 py-2.5 rounded-full shadow-md border border-black/10">
+                            <span className="font-bold text-sm">{currentDate}</span>
+                            <Calendar size={18} className="text-black/40" />
                         </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <span className="text-sm font-black uppercase tracking-widest text-[#5C5C54]">Author</span>
+                        <div className="bg-white px-8 py-2.5 rounded-full shadow-md border border-black/10 min-w-[120px]">
+                            <span className="font-black text-sm">{user?.name?.split(' ')[0] || 'Member'}</span>
+                        </div>
+                    </div>
+                </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            {/* Category Select */}
-                            <div className="space-y-3">
-                                <label className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 ml-1">
-                                    <Hash size={16} /> Category
-                                </label>
-                                <select
-                                    className="w-full p-4 bg-black/5 border-none rounded-2xl font-bold appearance-none outline-none focus:ring-2 focus:ring-black transition-all"
-                                    value={formData.category}
-                                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                >
-                                    <option>General</option>
-                                    <option>Stoicism</option>
-                                    <option>Existentialism</option>
-                                    <option>Ethics</option>
-                                    <option>Logic</option>
-                                    <option>Metaphysics</option>
-                                </select>
-                            </div>
+                {/* Main Canvas */}
+                <div className="bg-[#F0F5F5]/80 backdrop-blur-md rounded-[3.5rem] p-6 md:p-12 shadow-2xl border border-white/20 relative min-h-[60vh]">
+                    {/* Close Button Pin */}
+                    <button onClick={onClose} className="absolute right-8 top-8 p-3 hover:bg-black/5 rounded-full transition-colors hover:cursor-pointer">
+                        <X size={24} />
+                    </button>
 
-                            {/* Image Upload */}
-                            <div className="space-y-3">
-                                <label className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 ml-1">
-                                    <ImageIcon size={16} /> Cover Image
-                                </label>
-                                <div
-                                    onClick={() => fileInputRef.current?.click()}
-                                    className="relative h-48 bg-black/5 rounded-2xl border-2 border-dashed border-black/10 hover:border-black/30 transition-all cursor-pointer flex flex-col items-center justify-center overflow-hidden"
-                                >
+                    {/* Content Grid */}
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 mt-12">
+                        {/* Left: Image Management */}
+                        <div className="lg:col-span-3">
+                            <div className="bg-[#F3F0E6] p-6 pb-8 rounded-[3rem] shadow-xl border border-black/20 flex flex-col items-center">
+                                <div className="w-full aspect-square mb-6 relative group">
                                     {imagePreview ? (
-                                        <>
-                                            <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
-                                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                                                <Upload className="text-white" size={32} />
-                                            </div>
-                                        </>
+                                        <div className="w-full h-full rounded-[2.5rem] overflow-hidden border-[8px] border-white shadow-2xl">
+                                            <img src={imagePreview} className="w-full h-full object-cover" alt="Article Cover" />
+                                        </div>
                                     ) : (
-                                        <div className="flex flex-col items-center gap-2 text-black/40">
-                                            <Upload size={32} />
-                                            <span className="text-xs font-black uppercase tracking-widest">Upload Image</span>
+                                        <div className="w-full h-full rounded-[2.5rem] bg-white border-[8px] border-white shadow-2xl flex flex-col items-center justify-center text-black/10">
+                                            <ImageIcon size={64} strokeWidth={1} />
+                                            <p className="text-[10px] font-black uppercase mt-4 tracking-tighter">Cover Image</p>
                                         </div>
                                     )}
+                                </div>
+                                <button
+                                    onClick={() => fileInputRef.current?.click()}
+                                    className="bg-black text-white px-10 py-3.5 rounded-full font-black text-xs hover:scale-105 active:scale-95 transition-all shadow-xl hover:cursor-pointer"
+                                >
+                                    {imagePreview ? 'Change Image' : 'Add Image'}
+                                </button>
+                                <input type="file" ref={fileInputRef} onChange={handleImageChange} accept="image/*" className="hidden" />
+                            </div>
+                        </div>
+
+                        {/* Center: Main Form */}
+                        <div className="lg:col-span-6">
+                            <div className="bg-[#F3F0E6] p-8 md:p-10 rounded-[3rem] shadow-xl border border-black space-y-8">
+                                {/* Title */}
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-black ml-4">Article Title</label>
                                     <input
-                                        type="file"
-                                        ref={fileInputRef}
-                                        onChange={handleImageChange}
-                                        accept="image/*"
-                                        className="hidden"
+                                        type="text"
+                                        value={formData.title}
+                                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                        placeholder="The Silent Tao: A Journey into Void"
+                                        className="w-full bg-white border-2 border-black/10 px-6 py-4 rounded-full font-bold focus:ring-2 focus:ring-black outline-none transition-all"
                                     />
+                                </div>
+
+                                {/* Tags */}
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-black ml-4">Tags</label>
+                                    <input
+                                        type="text"
+                                        value={formData.tags}
+                                        onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+                                        placeholder="#taoism, #philosophy, #harmony"
+                                        className="w-full bg-white border-2 border-black/10 px-6 py-4 rounded-full font-bold focus:ring-2 focus:ring-black outline-none transition-all"
+                                    />
+                                </div>
+
+                                {/* Description / Content */}
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-black ml-4">Description</label>
+                                    <div className="bg-white rounded-[2rem] border-2 border-black/10 overflow-hidden flex flex-col">
+                                        {/* Editor Toolbar */}
+                                        <div className="flex items-center gap-1.5 p-3 border-b border-black/10 overflow-x-auto bg-black/5">
+                                            <button onClick={() => handleToolbarAction("Bold")} type="button" className="p-2 hover:bg-black/10 rounded-lg text-black/80 transition-colors hover:cursor-pointer"><Bold size={16} /></button>
+                                            <button onClick={() => handleToolbarAction("Italic")} type="button" className="p-2 hover:bg-black/10 rounded-lg text-black/80 transition-colors hover:cursor-pointer"><Italic size={16} /></button>
+                                            <button onClick={() => handleToolbarAction("Link")} type="button" className="p-2 hover:bg-black/10 rounded-lg text-black/80 transition-colors hover:cursor-pointer"><LinkIcon size={16} /></button>
+                                            <button onClick={() => handleToolbarAction("Quote")} type="button" className="p-2 hover:bg-black/10 rounded-lg text-black/80 transition-colors hover:cursor-pointer"><Quote size={16} /></button>
+                                            <button onClick={() => handleToolbarAction("Code")} type="button" className="p-2 hover:bg-black/10 rounded-lg text-black/80 transition-colors hover:cursor-pointer"><Code size={16} /></button>
+                                            <button onClick={() => handleToolbarAction("List")} type="button" className="p-2 hover:bg-black/10 rounded-lg text-black/80 transition-colors hover:cursor-pointer"><List size={16} /></button>
+                                        </div>
+                                        <textarea
+                                            ref={textareaRef}
+                                            rows={8}
+                                            value={formData.content}
+                                            onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                                            placeholder="Write your philosophical thoughts here..."
+                                            className="w-full p-6 bg-white outline-none font-serif text-lg leading-relaxed border-none focus:ring-0"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Save Actions */}
+                                <div className="flex items-center gap-4 pt-4">
+                                    <button className="flex-1 bg-white border-2 border-black/10 text-black px-10 py-5 rounded-full font-black text-sm hover:bg-black/5 transition-all shadow-lg uppercase tracking-tight hover:cursor-pointer">
+                                        Save Draft
+                                    </button>
+                                    <button
+                                        onClick={handleSubmit}
+                                        disabled={isLoading}
+                                        className="flex-[1.5] bg-black text-white px-10 py-5 rounded-full font-black text-sm hover:scale-[1.02] active:scale-95 transition-all shadow-2xl uppercase tracking-tighter flex items-center justify-center gap-3 disabled:opacity-70 hover:cursor-pointer"
+                                    >
+                                        {isLoading ? (
+                                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                        ) : (
+                                            <>Publish Article <ChevronRight size={20} /></>
+                                        )}
+                                    </button>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Main Content */}
-                        <div className="space-y-3">
-                            <label className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 ml-1">
-                                <Sparkles size={16} /> Content
-                            </label>
-                            <textarea
-                                required
-                                rows={8}
-                                placeholder="Write your philosophical thoughts here..."
-                                className="w-full p-6 bg-black/5 border-none rounded-[2rem] font-medium leading-relaxed outline-none focus:ring-2 focus:ring-black transition-all"
-                                value={formData.content}
-                                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                            />
-                        </div>
-                    </form>
-                </div>
+                        {/* Right: Multi-Image Gallery Logic Mockup */}
+                        <div className="lg:col-span-3 space-y-8">
+                            <div className="bg-[#F3F0E6] p-8 pb-10 rounded-[3rem] shadow-xl border border-black/20 flex flex-col items-center">
+                                <h3 className="text-center font-black tracking-tighter mb-8 leading-tight">
+                                    Future Multi-Image <br /> Gallery
+                                </h3>
 
-                {/* Footer Actions */}
-                <div className="px-8 py-6 border-t border-black/5 bg-white/80 backdrop-blur-md flex flex-col sm:flex-row items-center gap-4">
-                    <button
-                        type="button"
-                        onClick={onClose}
-                        className="w-full sm:w-auto px-8 py-4 text-black font-bold flex items-center justify-center gap-2 hover:bg-black/5 rounded-2xl transition-all"
-                    >
-                        <ArrowLeft size={20} /> Cancel
-                    </button>
-                    <button
-                        form="article-form"
-                        type="submit"
-                        disabled={isLoading}
-                        className="w-full sm:flex-grow px-10 py-4 bg-black text-white font-black rounded-2xl flex items-center justify-center gap-3 shadow-xl hover:scale-[1.02] active:scale-98 transition-all disabled:opacity-70"
-                    >
-                        {isLoading ? (
-                            <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />
-                        ) : (
-                            <>
-                                Publish Article <Send size={20} />
-                            </>
-                        )}
-                    </button>
+                                <div className="grid grid-cols-2 gap-4 w-full mb-8">
+                                    {[1, 2, 3].map((i) => (
+                                        <div key={i} className={`aspect-square rounded-2xl border-2 border-dashed border-black/20 flex items-center justify-center text-black/20 ${i === 3 ? 'col-span-2 mx-auto w-1/2' : ''} hover:cursor-pointer hover:border-black/40 transition-colors`}>
+                                            <Plus size={24} strokeWidth={1} />
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <span className="text-[10px] font-black uppercase tracking-widest text-black/30">Add image slots</span>
+                            </div>
+
+                            <div className="flex justify-end pt-12">
+                                <button className="bg-white/80 border-2 border-black/20 text-black px-8 py-4 rounded-full font-black text-xs hover:bg-[#F3F0E6] transition-all shadow-xl uppercase tracking-widest flex items-center gap-3 hover:cursor-pointer">
+                                    Read Full Article
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

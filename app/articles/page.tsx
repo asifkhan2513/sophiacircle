@@ -22,7 +22,7 @@ export default function ArticlesPage() {
     <main className="grow pt-16 md:pt-24 pb-16 md:pb-24 bg-[#D6E6E6]">
       <div className="container mx-auto px-4 md:px-6 max-w-7xl">
         <div className="flex flex-col items-center mb-10 md:mb-16">
-          <h1 className="text-2xl md:text-[9rem] font-black tracking-tighter text-[#5C5C54] drop-shadow-[0_2px_2px_rgba(0,0,0,0.1)] uppercase leading-none">
+          <h1 className="text-2xl md:text-[3rem] font-black tracking-tighter text-black drop-shadow-[0_2px_2px_rgba(0,0,0,0.1)] uppercase leading-none">
             Articles
           </h1>
         </div>

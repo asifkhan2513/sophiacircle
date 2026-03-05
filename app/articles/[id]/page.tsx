@@ -50,10 +50,13 @@ export default function ArticleDetail() {
                 {/* Back Link Overlay */}
                 <Link
                     href="/articles"
-                    className="inline-flex items-center gap-2 text-[#5C5C54] font-black uppercase text-[10px] tracking-widest mb-8 hover:opacity-100 opacity-60 transition-all group"
+                    className="inline-flex items-center gap-2 text-black f  px-2 bg-[#E7EFC7] rounded-full uppercase text-[18px] tracking-widest mb-8 hover:opacity-100 opacity-100 transition-all group"
                 >
-                    <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-                    Return to Archive
+                    <ArrowLeft
+                        size={16}
+                        className="group-hover:-translate-x-1 transition-transform"
+                    />
+                    Back
                 </Link>
 
                 {/* Main Article Canvas */}
@@ -62,7 +65,7 @@ export default function ArticleDetail() {
                     <header className="pt-16 pb-12 px-8 md:px-20 flex flex-col items-center text-center">
                         {/* Center Header Image */}
                         {article.image && (
-                            <div className="w-48 h-48 md:w-64 md:h-64 rounded-[3rem] overflow-hidden border-[8px] border-white shadow-2xl mb-12 transform -rotate-2">
+                            <div className="w-48 h-48 md:w-35 md:h-35 rounded-[3rem] overflow-hidden border-[8px] border-white shadow-2xl mb-12 transform -rotate-2">
                                 <Image
                                     src={article.image}
                                     alt={article.title}
@@ -73,23 +76,23 @@ export default function ArticleDetail() {
                             </div>
                         )}
 
-                        <h1 className="text-4xl md:text-7xl font-black tracking-tighter mb-6 text-black leading-tight max-w-4xl">
+                        <h1 className="text-4xl md:text-2xl font-black tracking-tighter mb-6 text-black leading-tight max-w-4xl">
                             {article.title}
                         </h1>
 
                         <div className="flex flex-wrap items-center justify-center gap-2 text-[10px] md:text-xs font-bold text-black/40 uppercase tracking-widest mb-10">
                             {article.tags?.slice(0, 3).map((tag: string) => (
-                                <span key={tag} className="text-emerald-700">#{tag}</span>
+                                <span key={tag} className="text-emerald-700">
+                                    #{tag}
+                                </span>
                             ))}
-                            <span className="mx-2 opacity-20">•</span>
-                            <span>{new Date(article.createdAt).toLocaleDateString()}</span>
-                            <span className="mx-2 opacity-20">•</span>
-                            <span className="text-black font-black">{article.author?.name || 'Anonymous'}</span>
+                            <span className="mx-2 ">•</span>
+                            <span className="mx-2 text-black">{new Date(article.createdAt).toLocaleDateString()}</span>
+                            <span className="mx-2 ">•</span>
+                            <span className="text-black font-black">
+                                {article.author?.name || "Anonymous"}
+                            </span>
                         </div>
-
-                        <p className="text-lg md:text-xl text-black/60 font-medium max-w-3xl leading-relaxed italic">
-                            {article.description?.split('.')[0]}.
-                        </p>
                     </header>
 
                     <div className="h-px w-full bg-black/5" />
@@ -102,17 +105,6 @@ export default function ArticleDetail() {
                                 <p className="text-xl md:text-2xl text-black/80 leading-relaxed font-serif first-letter:text-6xl first-letter:font-black first-letter:text-stone-400 first-letter:mr-3 first-letter:float-left first-letter:leading-none">
                                     {article.description}
                                 </p>
-
-                                {/* Philosophical Highlight */}
-                                <div className="my-16 pl-8 border-l-4 border-emerald-800/20 py-4">
-                                    <blockquote className="text-3xl md:text-4xl font-black tracking-tighter text-black leading-tight">
-                                        "Within stillness, the true nature of all things is revealed."
-                                    </blockquote>
-                                </div>
-
-                                <p className="text-xl md:text-2xl text-black/80 leading-relaxed font-serif">
-                                    {article.description}
-                                </p>
                             </div>
                         </div>
 
@@ -120,7 +112,9 @@ export default function ArticleDetail() {
                         <div className="lg:col-span-5 space-y-8">
                             <div className="bg-white/40 backdrop-blur-sm rounded-[3rem] p-10 border border-white/50 shadow-xl">
                                 <div className="flex items-center justify-between mb-10">
-                                    <h3 className="text-2xl font-black tracking-tighter">Wisdom in Images</h3>
+                                    <h3 className="text-2xl font-black tracking-tighter">
+                                        Wisdom in Images
+                                    </h3>
                                     <div className="p-2 bg-black/5 rounded-full">
                                         <Share2 size={16} />
                                     </div>
@@ -128,9 +122,12 @@ export default function ArticleDetail() {
 
                                 <div className="flex justify-between items-center gap-4">
                                     {[1, 2, 3].map((i) => (
-                                        <div key={i} className="flex-1 aspect-square rounded-full border-4 border-white shadow-lg overflow-hidden relative group">
+                                        <div
+                                            key={i}
+                                            className="flex-1 aspect-square rounded-full border-4 border-white shadow-lg overflow-hidden relative group"
+                                        >
                                             <Image
-                                                src={article.image || '/assets/logo.jpg'}
+                                                src={article.image || "/assets/logo.jpg"}
                                                 alt="wisdom"
                                                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                                 fill
@@ -145,9 +142,15 @@ export default function ArticleDetail() {
                                     <UserIcon size={24} />
                                 </div>
                                 <div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-black/40">About the Author</p>
-                                    <h4 className="text-xl font-black">{article.author?.name || 'Anonymous'}</h4>
-                                    <p className="text-sm font-medium text-black/60 mt-1">{article.author?.city}, {article.author?.country}</p>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-black">
+                                        About the Author
+                                    </p>
+                                    <h4 className="text-xl font-black">
+                                        {article.author?.name || "Anonymous"}
+                                    </h4>
+                                    <p className="text-sm font-medium text-black mt-1">
+                                        {article.author?.city}, {article.author?.country}
+                                    </p>
                                 </div>
                             </div>
                         </div>
