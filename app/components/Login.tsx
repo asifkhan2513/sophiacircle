@@ -1,57 +1,58 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Mail, Lock, User, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLoading, setToken, setUser, setError } from '../redux/features/auth/authSlice';
+import { RootState } from '../redux/store';
+import api from '../utils/api';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const { loading: isLoading } = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch();
   const router = useRouter();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    dispatch(setLoading(true));
 
-    // Simulate authentication
-    setTimeout(() => {
-      // Check for dummy user or registered users
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
+    try {
+      const response = await api.post('/auth/login', { email, password });
+      // In UserControllers.ts, the login response is:
+      // {
+      //   success: true,
+      //   _id: user._id,
+      //   name: user.name,
+      //   email: user.email,
+      //   role: user.role,
+      //   token
+      // }
+      const { token, ...user } = response.data;
 
-      const dummyUser = {
-        name: 'Dummy User',
-        email: 'user@gmail.com',
-        password: 'password123',
-        city: 'Delhi',
-        country: 'India',
-        age: 25,
-        createdAt: new Date().toISOString()
-      };
+      dispatch(setToken(token));
+      dispatch(setUser(user));
 
-      const user = (email === dummyUser.email && password === dummyUser.password)
-        ? dummyUser
-        : users.find((u: any) => u.email === email && u.password === password);
-
-      if (user) {
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('currentUser', JSON.stringify(user));
-        toast.success(`Welcome back, ${user.name}!`);
-        router.push('/dashboard');
-        router.refresh();
-      } else {
-        toast.error('Invalid email or password');
-      }
-      setIsLoading(false);
-    }, 1000);
+      toast.success(`Welcome back, ${user.name}!`);
+      router.push('/dashboard');
+      router.refresh();
+    } catch (error: any) {
+      const message = error.response?.data?.message || 'Login failed';
+      dispatch(setError(message));
+      toast.error(message);
+    } finally {
+      dispatch(setLoading(false));
+    }
   };
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <div className="bg-white p-8 md:p-10 rounded-[2.5rem] shadow-2xl border border-black/5">
+      <div className="bg-white p-8 md:p-10 rounded-[2.5rem] shadow-2xl border border-black">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-black tracking-tight mb-2">Welcome Back</h2>
           <p className="text-black/60 font-medium">Please enter your details</p>
@@ -77,9 +78,17 @@ export default function Login() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-bold ml-1 text-black" htmlFor="password">
-              Password
-            </label>
+            <div className="flex justify-between items-center ml-1">
+              <label className="text-sm font-bold text-black" htmlFor="password">
+                Password
+              </label>
+              <Link
+                href="/forgot-password"
+                className="text-xs font-bold text-black/40 hover:text-black transition-colors"
+              >
+                Forgot Password?
+              </Link>
+            </div>
             <div className="relative group">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-black/40 group-focus-within:text-black transition-colors" size={20} />
               <input

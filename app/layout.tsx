@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { Toaster } from "react-hot-toast";
+import ReduxProvider from "./redux/provider";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://sophiacircle.vercel.app"),
@@ -78,14 +79,20 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased min-h-screen bg-background selection:bg-accent/20">
-        <Toaster position="top-center" />
-        <div className="flex flex-col min-h-screen">
-          <Navbar />
-          <div className="flex-grow">
-            {children}
+        <ReduxProvider>
+
+
+          <Toaster position="top-center" />
+          <div className="flex flex-col min-h-screen">
+            <Navbar />
+            <div className="flex-grow">
+
+              {children}
+
+            </div>
+            <Footer />
           </div>
-          <Footer />
-        </div>
+        </ReduxProvider>
       </body>
     </html>
   );

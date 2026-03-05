@@ -109,7 +109,7 @@ export default function Home() {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6">
             <Link
-              href="/philosophers"
+              href="/explore"
               className="w-full sm:w-auto px-8 md:px-10 py-4 md:py-5 bg-white text-black font-bold rounded-2xl hover:scale-105 transition-all duration-300 shadow-2xl"
             >
               Explore Philosophers

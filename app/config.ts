@@ -7,6 +7,7 @@ import {
   Users,
   User,
   LayoutDashboard,
+  Shield,
 } from "lucide-react";
 
 // Define all path routes here
@@ -64,6 +65,12 @@ export const routes = [
     path: "/dashboard",
     component: "Dashboard",
     icon: LayoutDashboard,
+  },
+  {
+    name: "Admin",
+    path: "/admin",
+    component: "Admin",
+    icon: Shield,
   },
 ];
 

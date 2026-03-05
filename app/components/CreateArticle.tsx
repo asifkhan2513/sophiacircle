@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
     PenLine,
     Type,
@@ -9,26 +9,52 @@ import {
     X,
     ArrowLeft,
     FileText,
-    Sparkles
+    Sparkles,
+    Upload
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import api from '../utils/api';
 
 interface CreateArticleProps {
     onClose: () => void;
-    user: any;
 }
 
-export default function CreateArticle({ onClose, user }: CreateArticleProps) {
+export default function CreateArticle({ onClose }: CreateArticleProps) {
     const [formData, setFormData] = useState({
         title: '',
-        excerpt: '',
         content: '',
         category: 'General',
-        image: ''
     });
+    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') onClose();
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [onClose]);
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            if (file.size > 5 * 1024 * 1024) {
+                toast.error("File size too large (max 5MB)");
+                return;
+            }
+            setImageFile(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         // Validation
@@ -36,35 +62,39 @@ export default function CreateArticle({ onClose, user }: CreateArticleProps) {
             toast.error('Title must be at least 5 characters');
             return;
         }
-        if (!formData.excerpt.trim() || formData.excerpt.length < 10) {
-            toast.error('Excerpt must be at least 10 characters');
-            return;
-        }
         if (!formData.content.trim() || formData.content.length < 20) {
             toast.error('Content must be at least 20 characters');
+            return;
+        }
+        if (!imageFile) {
+            toast.error('Please select an image for your article');
             return;
         }
 
         setIsLoading(true);
 
-        // Simulate article creation and storage
-        setTimeout(() => {
-            const articles = JSON.parse(localStorage.getItem('user_articles') || '[]');
-            const newArticle = {
-                ...formData,
-                id: Date.now(),
-                authorName: user.name,
-                authorEmail: user.email,
-                createdAt: new Date().toISOString()
-            };
+        try {
+            const data = new FormData();
+            data.append('title', formData.title);
+            data.append('description', formData.content);
+            data.append('category', formData.category);
+            data.append('tags', JSON.stringify([formData.category]));
+            data.append('image', imageFile);
 
-            articles.unshift(newArticle);
-            localStorage.setItem('user_articles', JSON.stringify(articles));
+            await api.post('/articles', data, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
 
             toast.success('Article published successfully!');
-            setIsLoading(false);
             onClose();
-        }, 1500);
+        } catch (error: any) {
+            console.error("Upload error:", error);
+            toast.error(error.response?.data?.message || 'Failed to publish article');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -134,34 +164,37 @@ export default function CreateArticle({ onClose, user }: CreateArticleProps) {
                                 </select>
                             </div>
 
-                            {/* Image Placeholder */}
+                            {/* Image Upload */}
                             <div className="space-y-3">
                                 <label className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 ml-1">
-                                    <ImageIcon size={16} /> Image URL (Optional)
+                                    <ImageIcon size={16} /> Cover Image
                                 </label>
-                                <input
-                                    type="url"
-                                    placeholder="https://images.unsplash.com/..."
-                                    className="w-full p-4 bg-black/5 border-none rounded-2xl font-bold outline-none focus:ring-2 focus:ring-black transition-all"
-                                    value={formData.image}
-                                    onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                                />
+                                <div
+                                    onClick={() => fileInputRef.current?.click()}
+                                    className="relative h-48 bg-black/5 rounded-2xl border-2 border-dashed border-black/10 hover:border-black/30 transition-all cursor-pointer flex flex-col items-center justify-center overflow-hidden"
+                                >
+                                    {imagePreview ? (
+                                        <>
+                                            <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                                                <Upload className="text-white" size={32} />
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <div className="flex flex-col items-center gap-2 text-black/40">
+                                            <Upload size={32} />
+                                            <span className="text-xs font-black uppercase tracking-widest">Upload Image</span>
+                                        </div>
+                                    )}
+                                    <input
+                                        type="file"
+                                        ref={fileInputRef}
+                                        onChange={handleImageChange}
+                                        accept="image/*"
+                                        className="hidden"
+                                    />
+                                </div>
                             </div>
-                        </div>
-
-                        {/* Excerpt */}
-                        <div className="space-y-3">
-                            <label className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 ml-1">
-                                <FileText size={16} /> Brief Excerpt
-                            </label>
-                            <textarea
-                                required
-                                rows={2}
-                                placeholder="A short summary that catches the reader's eye..."
-                                className="w-full p-4 bg-black/5 border-none rounded-2xl font-bold outline-none focus:ring-2 focus:ring-black transition-all resize-none"
-                                value={formData.excerpt}
-                                onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-                            />
                         </div>
 
                         {/* Main Content */}

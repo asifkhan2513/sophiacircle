@@ -40,7 +40,7 @@ export default function Footer() {
               <span className="text-2xl font-black tracking-tighter">{siteConfig.name}</span>
             </Link>
 
-            <p className="text-black/60 font-medium leading-relaxed max-w-sm">
+            <p className="text-black font-medium leading-relaxed max-w-sm">
               Exploring the intersections of ancient wisdom and modern life. Sophia Circle is a sanctuary for those who believe the unexamined life is not worth living.
             </p>
 
@@ -75,7 +75,7 @@ export default function Footer() {
                 <li key={link.path}>
                   <Link
                     href={link.path}
-                    className="text-black/60 font-bold hover:text-black hover:translate-x-1 transition-all inline-block"
+                    className="text-black font-bold hover:text-black hover:translate-x-1 transition-all inline-block"
                   >
                     {link.name}
                   </Link>
@@ -97,7 +97,7 @@ export default function Footer() {
                 <li key={link.path}>
                   <Link
                     href={link.path}
-                    className="text-black/60 font-bold hover:text-black hover:translate-x-1 transition-all inline-block"
+                    className="text-black font-bold hover:text-black hover:translate-x-1 transition-all inline-block"
                   >
                     {link.name}
                   </Link>
@@ -112,7 +112,7 @@ export default function Footer() {
               <h4 className="text-xl font-black mb-4 flex items-center gap-2">
                 Join the Circle <ArrowRight size={20} className="text-black/20" />
               </h4>
-              <p className="text-sm text-black/60 font-medium mb-6">
+              <p className="text-sm text-black font-medium mb-6">
                 Receive weekly insights on philosophy, ethics, and great thinkers. No spam, just deep thoughts.
               </p>
               <div className="relative group">
@@ -132,16 +132,16 @@ export default function Footer() {
 
         {/* Footer Bottom */}
         <div className="pt-12 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center gap-8 text-[11px] font-black uppercase tracking-widest text-black/40">
-            <span className="flex items-center gap-2">
+          {/* <div className="flex items-center gap-8 text-[11px] font-black uppercase tracking-widest text-black/40">
+            <span className="flex items-center gap-2 text-black">
               <Globe size={12} /> GLOBAL THINKERS
             </span>
-            <span className="flex items-center gap-2">
+            <span className="flex items-center gap-2 text-black">
               <ShieldCheck size={12} /> SECURED DATA
             </span>
-          </div>
+          </div> */}
 
-          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-black/30 text-center md:text-right">
+          <p className="text-[10px] font-black  tracking-[0.3em] text-black text-center md:text-right">
             &copy; {currentYear} {siteConfig.name}. CRAFTED FOR THE MODERN STOIC.
           </p>
         </div>

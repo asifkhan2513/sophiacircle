@@ -3,52 +3,41 @@ import React, { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { routes, siteConfig } from "./config";
-import { LogOut } from "lucide-react";
+import { LogOut, User as UserIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import Image from "next/image";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "./redux/store";
+import { logout as reduxLogout } from "./redux/features/auth/authSlice";
 
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
+  const dispatch = useDispatch();
+  const { user, token } = useSelector((state: RootState) => state.auth);
+  const isLoggedIn = !!token;
+
   const [scrolled, setScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
 
-    // Check login status
-    const checkLogin = () => {
-      setIsLoggedIn(localStorage.getItem("isLoggedIn") === "true");
-    };
-
-    checkLogin();
     window.addEventListener("scroll", handleScroll);
-
-    // Listen for storage changes (for cross-tab or same-page updates)
-    window.addEventListener("storage", checkLogin);
-
-    // We also check periodically or on route change as a fallback
-    const interval = setInterval(checkLogin, 1000);
-
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("storage", checkLogin);
-      clearInterval(interval);
     };
   }, []);
 
   const handleLogout = useCallback(() => {
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("currentUser");
-    setIsLoggedIn(false);
+    dispatch(reduxLogout());
     toast.success("Logged out successfully");
     setIsMobileMenuOpen(false);
     router.push("/login");
     router.refresh();
-  }, [router]);
+  }, [dispatch, router]);
 
   const isHome = pathname === "/";
   const navTextColor =
@@ -58,14 +47,15 @@ export default function Navbar() {
       ? "glass shadow-md py-2"
       : "bg-transparent py-4";
 
-  // Filter routes based on login status
+  // Filter routes based on login status and role
   const visibleRoutes = useMemo(() => {
     return routes.filter((route) => {
       if (route.path === "/login" || route.path === "/signup") return !isLoggedIn;
       if (route.path === "/dashboard") return isLoggedIn;
+      if (route.path === "/admin") return isLoggedIn && user?.role === "admin";
       return true;
     });
-  }, [isLoggedIn]);
+  }, [isLoggedIn, user?.role]);
 
   return (
     <nav
@@ -113,13 +103,15 @@ export default function Navbar() {
             })}
 
             {isLoggedIn && (
-              <button
-                onClick={handleLogout}
-                className={`px-4 py-2 text-sm font-semibold transition-all duration-200 rounded-full flex items-center gap-2 ${navTextColor} hover:bg-red-50 hover:text-red-500`}
-              >
-                <LogOut size={16} />
-                Logout
-              </button>
+              <div className="flex items-center gap-2 ml-4">
+                <button
+                  onClick={handleLogout}
+                  className="px-6 py-2 text-sm font-black transition-all duration-200 rounded-full flex items-center gap-2 bg-red-500 text-white hover:bg-red-600 shadow-lg shadow-red-500/20 active:scale-95"
+                >
+                  <LogOut size={16} />
+                  Logout
+                </button>
+              </div>
             )}
           </div>
 
@@ -167,6 +159,17 @@ export default function Navbar() {
           className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${isMobileMenuOpen ? "max-h-[600px] mt-4 pb-4" : "max-h-0"}`}
         >
           <div className="flex flex-col space-y-2">
+            {isLoggedIn && (
+              <div className="px-4 py-3 flex items-center gap-3 border-b border-black/5 mb-2">
+                <div className="w-10 h-10 bg-black rounded-lg flex items-center justify-center text-white">
+                  <UserIcon size={20} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-sm">{user?.name}</h4>
+                  <p className="text-xs text-black/50">{user?.role}</p>
+                </div>
+              </div>
+            )}
             {visibleRoutes.map((route) => {
               const Icon = route.icon;
               const isActive = pathname === route.path;

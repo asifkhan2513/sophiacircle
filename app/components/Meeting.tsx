@@ -1,5 +1,4 @@
 import React from 'react'
-
 export default function Meeting() {
   return (
     <div className="glass p-10 rounded-[2rem] shadow-xl text-center">
