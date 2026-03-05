@@ -5,8 +5,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { setArticles, setLoading, setError } from '../redux/features/articles/articleSlice';
 import api from '../utils/api';
-import { Calendar, User as UserIcon, Tag, ChevronRight } from 'lucide-react';
+import { Calendar, User as UserIcon, Tag, ChevronRight, BookOpen } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Articles() {
   const { articles, loading } = useSelector((state: RootState) => state.article);
@@ -45,58 +46,66 @@ export default function Articles() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
       {articles.map((article: any) => (
-        <div key={article._id} className="glass p-8 md:p-10 rounded-[2.5rem] shadow-xl border border-black/5 hover:border-black/10 transition-all group">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-            {article.image && (
-              <div className="md:col-span-4 h-48 md:h-full rounded-3xl overflow-hidden border border-black/5">
-                <img
-                  src={article.image}
-                  alt={article.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        <div
+          key={article._id}
+          className="bg-[#F3F0E6] p-8 pb-10 rounded-[3rem] shadow-xl border border-black/5 hover:scale-[1.02] transition-all duration-300 flex flex-col items-center group"
+        >
+          {/* Circular Image Container */}
+          <div className="w-full aspect-square mb-6 relative group">
+            {article?.image ? (
+              <div className="w-full h-full rounded-full overflow-hidden border-[8px] border-white shadow-2xl relative">
+                <Image
+                  src={article?.image}
+                  alt={article?.title}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  loading="lazy"
                 />
               </div>
+            ) : (
+              <div className="w-full h-full rounded-full bg-black/5 flex items-center justify-center border-4 border-dashed border-black/10">
+                <BookOpen className="text-black/20" size={48} />
+              </div>
             )}
-            <div className={article.image ? "md:col-span-8 flex flex-col" : "md:col-span-12 flex flex-col"}>
-              <div className="flex flex-wrap items-center gap-4 mb-4">
-                <span className="px-4 py-1.5 bg-black text-white text-[10px] font-black uppercase tracking-widest rounded-full">
-                  {article.tags?.[0] || 'Philosophy'}
-                </span>
-                <div className="flex items-center gap-2 text-black/40 text-xs font-bold">
-                  <Calendar size={14} />
-                  {new Date(article.createdAt).toLocaleDateString()}
-                </div>
-                <div className="flex items-center gap-2 text-black/40 text-xs font-bold">
-                  <UserIcon size={14} />
-                  {article.author?.name || 'Anonymous'}
-                </div>
-              </div>
 
-              <h2 className="text-3xl md:text-4xl font-black mb-4 tracking-tighter group-hover:text-black/70 transition-colors">
-                {article.title}
-              </h2>
+            {/* Overlay Icon or Effect if needed - keep it simple like screenshot */}
+          </div>
 
-              <p className="text-black/60 font-medium leading-relaxed mb-8 line-clamp-3">
-                {article.description}
-              </p>
+          {/* Meta Information */}
+          <div className="text-center mb-4">
+            <p className="text-[10px] font-bold text-black/60 tracking-tight flex flex-wrap justify-center gap-1">
+              {article?.tags?.slice(0, 3).map((tag: string, i: number) => (
+                <span key={tag}>#{tag}{i < article.tags.slice(0, 3).length - 1 ? ',' : ''}</span>
+              ))}
+              <span className="mx-1">•</span>
+              <span>{new Date(article?.createdAt).toLocaleDateString()}</span>
+              <span className="mx-1">•</span>
+              <span className="font-black text-black">{article?.author?.name || 'Anonymous'}</span>
+            </p>
+          </div>
 
-              <div className="mt-auto flex items-center justify-between">
-                <Link
-                  href={`/articles/${article._id}`}
-                  className="px-6 py-3 bg-black text-white font-bold rounded-2xl hover:scale-105 transition-all text-sm flex items-center gap-2 shadow-lg"
-                >
-                  Read Full Article <ChevronRight size={18} />
-                </Link>
-                <div className="hidden sm:flex items-center gap-2">
-                  {article.tags?.slice(1, 3).map((tag: string) => (
-                    <span key={tag} className="text-[10px] font-bold text-black/30 border border-black/5 px-2 py-1 rounded-md">
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
+          {/* Title */}
+          <h2 className="text-2xl md:text-3xl font-black mb-4 tracking-tighter text-center leading-tight">
+            {article?.title}
+          </h2>
+
+          {/* Description */}
+          <p className="text-black/60 font-medium leading-relaxed mb-10 text-center line-clamp-3 text-sm md:text-base">
+            {article?.description}
+          </p>
+
+          {/* Action Button */}
+          <div className="mt-auto">
+            <Link
+              href={`/articles/${article?._id}`}
+              className="px-8 py-3.5 bg-black text-white font-black rounded-full hover:scale-105 active:scale-95 transition-all text-xs flex items-center gap-3 shadow-2xl group"
+            >
+              Read Full Article
+              <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
+            </Link>
           </div>
         </div>
       ))}

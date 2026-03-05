@@ -1,5 +1,7 @@
-import Signup from "@/app/components/Signup";
+import { lazy, Suspense } from "react";
+const Signup = lazy(() => import("@/app/components/Signup"))
 import { Metadata } from "next";
+import Loader from "@/app/loading";
 
 export const metadata: Metadata = {
     title: "Signup",
@@ -9,7 +11,9 @@ export const metadata: Metadata = {
 export default function SignupPage() {
     return (
         <main className="flex-grow pt-24 md:pt-32 pb-16 md:pb-24 bg-background">
-            <Signup />
+            <Suspense fallback={<Loader />}>
+                <Signup />
+            </Suspense>
         </main>
     );
 }

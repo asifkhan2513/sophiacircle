@@ -105,19 +105,19 @@ export default function ProfileSettings({ onClose }: ProfileSettingsProps) {
             {/* Modal */}
             <div className="relative w-full max-w-2xl bg-white rounded-[3rem] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300 flex flex-col max-h-[90vh]">
                 {/* Header */}
-                <div className="px-8 py-6 border-b border-black/5 flex items-center justify-between bg-white shrink-0">
+                <div className="px-8 py-6 border-b border-black/5 flex items-center justify-between bg-[#84B179] shrink-0">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center text-white">
+                        <div className="w-10 h-10 bg-yellow-800 rounded-xl flex items-center justify-center text-white">
                             <Settings size={20} />
                         </div>
                         <div>
                             <h2 className="text-xl font-black tracking-tight">Settings</h2>
-                            <p className="text-black/40 text-[10px] font-bold uppercase tracking-wider">Manage your profile & security</p>
+                            <p className="text-black text-[10px] font-bold uppercase tracking-wider">Manage your profile & security</p>
                         </div>
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-2 hover:bg-black/5 rounded-xl transition-colors"
+                        className="p-2 hover:bg-black/5 rounded-xl transition-colors hover:cursor-pointer"
                     >
                         <X size={20} />
                     </button>
@@ -127,14 +127,14 @@ export default function ProfileSettings({ onClose }: ProfileSettingsProps) {
                 <div className="flex px-8 border-b border-black/5 shrink-0">
                     <button
                         onClick={() => setActiveTab('profile')}
-                        className={`px-6 py-4 text-sm font-bold transition-all relative ${activeTab === 'profile' ? 'text-black' : 'text-black/40'}`}
+                        className={` px-6 py-4 text-sm font-bold transition-all relative ${activeTab === 'profile' ? 'text-black' : 'text-black/40'} hover:cursor-pointer`}
                     >
                         Profile Details
                         {activeTab === 'profile' && <div className="absolute bottom-0 left-0 right-0 h-1 bg-black rounded-t-full" />}
                     </button>
                     <button
                         onClick={() => setActiveTab('password')}
-                        className={`px-6 py-4 text-sm font-bold transition-all relative ${activeTab === 'password' ? 'text-black' : 'text-black/40'}`}
+                        className={` px-6 py-4 text-sm font-bold transition-all relative ${activeTab === 'password' ? 'text-black' : 'text-black/40'} hover:cursor-pointer`}
                     >
                         Security & Privacy
                         {activeTab === 'password' && <div className="absolute bottom-0 left-0 right-0 h-1 bg-black rounded-t-full" />}
@@ -239,10 +239,10 @@ export default function ProfileSettings({ onClose }: ProfileSettingsProps) {
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full py-5 bg-black text-white font-black rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-xl disabled:opacity-70"
+                                className="w-full text-black py-5 bg-[#84B179] font-black rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-xl "
                             >
                                 {isLoading ? (
-                                    <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                                    <div className="w-6 h-6 border-3 border-white border-t-white rounded-full animate-spin" />
                                 ) : (
                                     <>
                                         Save Changes <ArrowRight size={20} />
@@ -332,10 +332,10 @@ export default function ProfileSettings({ onClose }: ProfileSettingsProps) {
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full py-5 mt-4 bg-black text-white font-black rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-xl disabled:opacity-70"
+                                className="w-full py-5 mt-4 bg-[#84B179] text-black font-black rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-xl disabled:opacity-70"
                             >
                                 {isLoading ? (
-                                    <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                                    <div className="w-6 h-6 border-3 border-black border-t-black rounded-full animate-spin" />
                                 ) : (
                                     <>
                                         Update Password <ArrowRight size={20} />

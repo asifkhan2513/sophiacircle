@@ -48,10 +48,10 @@ export default function Dashboard() {
         dispatch(setArticleLoading(true));
         try {
             const response = await api.get('/articles/my-articles');
-            dispatch(setMyArticles(response.data.articles));
+            dispatch(setMyArticles(response?.data?.articles));
         } catch (error: any) {
             console.error("Error fetching articles:", error);
-            toast.error("Failed to load your articles");
+            toast.error(error?.response?.data?.message || "Failed to load your articles");
         } finally {
             dispatch(setArticleLoading(false));
         }
@@ -121,34 +121,28 @@ export default function Dashboard() {
             {/* Header section */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
                 <div>
-                    <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-2">
-                        Hey, {user.name.split(' ')[0]}!
+                    <h1 className="text-4xl md:text-6xl font-white text-[#118B50] tracking-tighter mb-2">
+                        Hey, {user?.name?.split(' ')[0]}!
                     </h1>
-                    <p className="text-black/60 font-medium">Welcome back to your philosophical sanctuary.</p>
+                    <p className="text-black font-medium">Welcome back to your philosophical sanctuary.</p>
                 </div>
 
                 <div className="flex items-center gap-3">
                     <button
                         onClick={() => setIsSettingsOpen(true)}
-                        className="p-3 bg-black/5 hover:bg-black hover:text-white transition-all rounded-2xl font-bold group"
+                        className="p-3 bg-[#5E936C] text-white  transition-all rounded-2xl font-bold group hover:cursor-pointer hover:bg-[#118B50] hover:text-white"
                         title="Settings"
                     >
                         <Settings size={20} className="group-hover:rotate-90 transition-transform duration-500" />
                     </button>
                     <button
                         onClick={() => setIsCreateModalOpen(true)}
-                        className="flex items-center gap-2 px-6 py-3 bg-black text-white hover:scale-105 transition-all rounded-2xl font-bold shadow-xl active:scale-95"
+                        className="flex items-center gap-2 px-6 py-3 bg-[#5E936C] text-black hover:scale-105 transition-all rounded-2xl font-bold shadow-xl active:scale-95 border-0.5 border-black hover:cursor-pointer"
                     >
                         <Plus size={20} />
                         Write Article
                     </button>
-                    <button
-                        onClick={handleLogout}
-                        className="flex items-center gap-2 px-6 py-3 bg-black/5 hover:bg-black hover:text-white transition-all rounded-2xl font-bold group"
-                    >
-                        <LogOut size={20} className="group-hover:-translate-x-1 transition-transform" />
-                        Logout
-                    </button>
+
                 </div>
             </div>
 
@@ -157,29 +151,33 @@ export default function Dashboard() {
                 {/* Left Column: Profile & Stats */}
                 <div className="space-y-8">
                     {/* Profile Card */}
-                    <div className="bg-white p-8 rounded-[2.5rem] shadow-xl border border-black/5 hover:shadow-2xl hover:border-black/10 transition-all duration-300">
+                    <div className="bg-yellow-800 text-white p-8 rounded-[2.5rem] shadow-xl border border-black/5 hover:shadow-2xl hover:border-black/10 transition-all duration-300">
                         <div className="flex items-center gap-4 mb-8">
                             <div className="w-16 h-16 bg-black rounded-2xl flex items-center justify-center text-white shadow-lg">
                                 <User size={32} />
                             </div>
                             <div>
-                                <h3 className="text-xl font-bold">{user.name}</h3>
-                                <p className="text-sm text-black/50">{user.email}</p>
+                                <h3 className="text-xl font-bold text-white">{user?.name}</h3>
+                                <p className="text-sm text-white">{user?.email}</p>
                             </div>
                         </div>
 
                         <div className="space-y-4 pt-4 border-t border-black/5">
                             <div className="flex justify-between">
-                                <span className="text-black/60 font-medium">Location</span>
-                                <span className="font-bold">{user.city || 'Not specified'}, {user.country || ''}</span>
+                                <span className="text-white font-medium">Location</span>
+                                <span className="font-bold">{user?.city || 'Not specified'}, {user?.country || ''}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-black/60 font-medium">Email Verified</span>
-                                <span className="font-bold">{user.isVerified ? 'Yes' : 'No'}</span>
+                                <span className="text-white font-medium">Age</span>
+                                <span className="font-bold">{user?.age}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-black/60 font-medium">Role</span>
-                                <span className="font-bold uppercase tracking-widest text-[10px] bg-black text-white px-2 py-1 rounded-full">{user.role}</span>
+                                <span className="text-white font-medium">City</span>
+                                <span className="font-bold">{user?.city}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-white font-medium">Role</span>
+                                <span className="font-bold uppercase tracking-widest text-[10px] bg-black text-white px-2 py-1 rounded-full">{user?.role}</span>
                             </div>
                         </div>
                     </div>
@@ -187,10 +185,10 @@ export default function Dashboard() {
                     {/* Compact Stats */}
                     <div className="grid grid-cols-2 gap-4">
                         {stats.map((stat, i) => (
-                            <div key={i} className="bg-white p-6 rounded-[2rem] shadow-lg border border-black/5 hover:shadow-xl transition-all">
-                                <stat.icon className="mb-2 text-black/40" size={20} />
-                                <h4 className="text-xs font-bold text-black/40 uppercase tracking-wider">{stat.label}</h4>
-                                <p className="text-2xl font-black">{stat.value}</p>
+                            <div key={i} className="bg-[#25671E] text-black p-6 rounded-[2rem] shadow-lg border border-black hover:shadow-xl transition-all">
+                                <stat.icon className="mb-2 text-white" size={20} />
+                                <h4 className="text-xs font-bold text-white uppercase tracking-wider">{stat?.label}</h4>
+                                <p className="text-2xl font-black text-white">{stat?.value}</p>
                             </div>
                         ))}
                     </div>
@@ -198,7 +196,7 @@ export default function Dashboard() {
                     {/* Quick Link Card - Create Article */}
                     <div
                         onClick={() => setIsCreateModalOpen(true)}
-                        className="bg-black text-white p-8 rounded-[2.5rem] shadow-xl border border-white/5 hover:scale-[1.02] transition-all cursor-pointer group"
+                        className="bg-[#3E3F29]  text-white p-8 rounded-[2.5rem] shadow-xl border border-white hover:scale-[1.02] transition-all cursor-pointer group"
                     >
                         <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-white/20 transition-colors">
                             <PenLine size={24} />
@@ -214,19 +212,19 @@ export default function Dashboard() {
                 {/* Right Column: Upcoming Event & My Articles */}
                 <div className="lg:col-span-2 space-y-8 ">
                     {/* Upcoming Event Card */}
-                    <div className="border-2 border-black/10 rounded-[3rem] text-black p-8 md:p-10 shadow-xl hover:shadow-2xl transition-all duration-500 relative overflow-hidden group bg-white">
+                    <div className="border-2 border-black/10 rounded-[3rem] text-black p-8 md:p-10 shadow-xl hover:shadow-2xl transition-all duration-500 relative overflow-hidden group bg-[#FDE7B3]">
                         {/* Decorative Background Element */}
                         <div className="absolute -top-24 -right-24 w-64 h-64 bg-black/5 rounded-full blur-3xl group-hover:bg-black/10 transition-colors" />
 
                         <div className="relative z-10">
                             <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-                                <div className="flex items-center gap-3 px-4 py-2 bg-black/5 rounded-full border border-black/5">
+                                <div className="flex items-center gap-3 px-4 py-2 bg-black/15 text-black rounded-full border border-black/5">
                                     <Video size={18} className="text-emerald-600" />
                                     <span className="text-sm font-bold tracking-wide uppercase text-black">Next Live Session</span>
                                 </div>
                                 <div className="flex items-center gap-2 text-black/60 font-medium">
-                                    <Clock size={16} />
-                                    <span>23 MARCH, 2026</span>
+                                    <Clock size={16} className='text-black' />
+                                    <span className='text-[#FF0000]'>23 MARCH, 2026</span>
                                 </div>
                             </div>
 
@@ -260,7 +258,7 @@ export default function Dashboard() {
                                     href="https://meet.google.com/msc-scch-ycu"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="w-full sm:w-auto px-8 py-5 bg-black text-white font-black rounded-2xl md:rounded-[1.5rem] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 shadow-2xl cursor-pointer"
+                                    className="w-full sm:w-auto px-8 py-5 bg-[#112D4E] text-white font-black rounded-2xl md:rounded-[1.5rem] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 shadow-2xl cursor-pointer"
                                 >
                                     Join Meeting <ArrowRight size={20} />
                                 </a>
@@ -268,7 +266,7 @@ export default function Dashboard() {
                                     href="https://www.google.com/calendar/render?action=TEMPLATE&text=Stoic+Wisdom+for+the+Modern+Chaos&dates=20260323T100000Z/20260323T113000Z&details=Join+our+Sophia+Circle+live+session+on+Google+Meet:+https://meet.google.com/msc-scch-ycu&location=Online"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="w-full sm:w-auto px-8 py-5 bg-black/5 border border-black/10 hover:bg-black/10 text-black font-bold rounded-2xl md:rounded-[1.5rem] transition-all hover:cursor-pointer flex items-center justify-center"
+                                    className="w-full sm:w-auto px-8 py-5 bg-[#5D866C] border border-black/10 hover:bg-black/10 text-black font-bold rounded-2xl md:rounded-[1.5rem] transition-all hover:cursor-pointer flex items-center justify-center"
                                 >
                                     Add to Calendar
                                 </a>
@@ -277,7 +275,7 @@ export default function Dashboard() {
                     </div>
 
                     {/* User's Recent Articles */}
-                    <div className="space-y-6 border rounded-3xl p-4">
+                    <div className="space-y-6 border rounded-3xl p-4 bg-[#DA4848]">
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="text-3xl font-black tracking-tighter">Your Articles</h2>
                         </div>
@@ -321,12 +319,12 @@ export default function Dashboard() {
                                 ))}
                             </div>
                         ) : (
-                            <div className="bg-white p-12 rounded-[3rem] shadow-xl border border-black/5 border-dashed flex flex-col items-center text-center">
-                                <div className="w-20 h-20 bg-black/5 rounded-full flex items-center justify-center text-black/20 mb-6">
+                            <div className="text-white bg-[#87B6BC] p-12 rounded-[3rem] shadow-xl border border-[#DA4848]/5 border-dashed flex flex-col items-center text-center">
+                                <div className="w-20 h-20 bg-white text-[#DA4848] rounded-full flex items-center justify-center mb-6">
                                     <BookOpen size={40} />
                                 </div>
-                                <h3 className="text-xl font-black mb-2">No articles yet</h3>
-                                <p className="text-black/40 font-medium max-w-xs mb-8">
+                                <h3 className="text-xl font-black mb-2 text-black">No articles yet</h3>
+                                <p className="text-black font-medium max-w-xs mb-8">
                                     Share your philosophical perspectives and start building your legacy.
                                 </p>
                                 <button

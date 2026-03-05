@@ -1,7 +1,7 @@
 import { lazy, Suspense } from "react";
-const ForgotPassword = lazy(() => import("../components/ForgotPassword"))
+const ForgotPassword = lazy(() => import("@/app/components/ForgotPassword"))
 import { Metadata } from "next";
-import Loader from "../loading";
+import Loader from "@/app/loading";
 
 export const metadata: Metadata = {
     title: "Forgot Password",

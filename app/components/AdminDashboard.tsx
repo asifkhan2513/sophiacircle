@@ -136,7 +136,7 @@ export default function AdminDashboard() {
                     { label: 'Growth Rate', value: '+12%', icon: TrendingUp, color: 'orange' },
                     { label: 'System Health', value: 'Optimal', icon: Shield, color: 'black' },
                 ].map((stat, i) => (
-                    <div key={i} className="glass p-8 rounded-[2.5rem] shadow-xl border border-black/5 flex flex-col justify-between group hover:scale-[1.02] transition-all">
+                    <div key={i} className="glass p-8 rounded-[2.5rem] shadow-xl border border-black flex flex-col justify-between group hover:scale-[1.02] transition-all">
                         <div className="flex items-center justify-between mb-8">
                             <div className={`w-12 h-12 bg-black/5 rounded-2xl flex items-center justify-center text-black group-hover:bg-black group-hover:text-white transition-all`}>
                                 <stat.icon size={22} />
@@ -144,8 +144,8 @@ export default function AdminDashboard() {
                             <ArrowUpRight size={20} className="text-black/20 group-hover:text-black transition-colors" />
                         </div>
                         <div>
-                            <span className="text-black/40 text-[10px] font-black uppercase tracking-widest">{stat.label}</span>
-                            <p className="text-3xl font-black tracking-tighter mt-1">{stat.value}</p>
+                            <span className="text-[#3D45AA] text-[10px] font-black uppercase tracking-widest">{stat.label}</span>
+                            <p className="text-3xl font-black tracking-tighter mt-1 text-[#DA3D20]">{stat.value}</p>
                         </div>
                     </div>
                 ))}
@@ -155,20 +155,20 @@ export default function AdminDashboard() {
             <div className="glass rounded-[3rem] shadow-2xl border border-black/5 overflow-hidden flex flex-col">
                 <div className="p-8 border-b border-black/5 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white/50 backdrop-blur-md">
                     <div className="flex items-center gap-2">
-                        <h2 className="text-2xl font-black tracking-tight">
+                        <h2 className="text-2xl font-black tracking-tight text-[#134E8E]">
                             {activeSection === 'users' ? 'User Registry' : 'Article Ledger'}
                         </h2>
-                        <span className="px-3 py-1 bg-black/5 rounded-full text-[10px] font-black uppercase tracking-widest text-black/40">
+                        <span className="px-3 py-1 bg-[#1A2A4F] rounded-full text-[10px] font-black uppercase tracking-widest text-white">
                             {activeSection === 'users' ? allUsers.length : allArticles.length} Total
                         </span>
                     </div>
 
                     <div className="relative group max-w-sm w-full">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-black/20 group-focus-within:text-black transition-colors" size={18} />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-black group-focus-within:text-black transition-colors" size={18} />
                         <input
                             type="text"
                             placeholder={`Search ${activeSection}...`}
-                            className="w-full pl-12 pr-6 py-4 bg-black/5 border-none rounded-2xl font-medium focus:ring-2 focus:ring-black outline-none transition-all"
+                            className="w-full pl-12 pr-6 py-4 border-2 border-black bg-black/5 rounded-2xl font-medium focus:ring-1 focus:ring-black outline-none transition-all"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -179,12 +179,12 @@ export default function AdminDashboard() {
                     {activeSection === 'users' ? (
                         <table className="w-full border-collapse">
                             <thead>
-                                <tr className="bg-black/5">
-                                    <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest text-black/40">User</th>
-                                    <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest text-black/40">Email</th>
-                                    <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest text-black/40">Location</th>
-                                    <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest text-black/40">Role</th>
-                                    <th className="px-8 py-5 text-right text-[10px] font-black uppercase tracking-widest text-black/40">Actions</th>
+                                <tr className="bg-[#E4004B] ">
+                                    <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest text-white">User</th>
+                                    <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest text-white">Email</th>
+                                    <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest text-white">Location</th>
+                                    <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest text-white">Role</th>
+                                    <th className="px-8 py-5 text-right text-[10px] font-black uppercase tracking-widest text-white">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-black/5">
@@ -200,15 +200,15 @@ export default function AdminDashboard() {
                                                     <span className="font-black">{u.name}</span>
                                                 </div>
                                             </td>
-                                            <td className="px-8 py-6 text-sm text-black/60 font-medium">{u.email}</td>
+                                            <td className="px-8 py-6 text-sm text-black font-medium">{u.email}</td>
                                             <td className="px-8 py-6">
-                                                <div className="flex items-center gap-1.5 text-xs font-bold text-black/40">
+                                                <div className="flex items-center gap-1.5 text-xs font-bold text-black">
                                                     <MapPin size={12} />
                                                     {u.city || 'Unknown'}, {u.country || '-'}
                                                 </div>
                                             </td>
                                             <td className="px-8 py-6">
-                                                <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${u.role === 'admin' ? 'bg-black text-white' : 'bg-black/5 text-black/40'}`}>
+                                                <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${u.role === 'admin' ? 'bg-black text-white' : 'bg-black text-white'}`}>
                                                     {u.role}
                                                 </span>
                                             </td>
@@ -216,14 +216,14 @@ export default function AdminDashboard() {
                                                 <div className="flex items-center justify-end gap-2">
                                                     <button
                                                         onClick={() => setSelectedUser(u)}
-                                                        className="p-3 text-black/10 hover:text-black hover:bg-black/5 rounded-xl transition-all"
+                                                        className="p-3 text-black border-2 hover:text-white hover:bg-blue-500 hover:cursor-pointer rounded-xl transition-all"
                                                     >
                                                         <Eye size={18} />
                                                     </button>
                                                     <button
                                                         onClick={() => handleDeleteUser(u._id)}
                                                         disabled={u.role === 'admin'}
-                                                        className="p-3 text-black/10 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all disabled:opacity-0"
+                                                        className="p-3 text-red-500 border-2 hover:text-white hover:bg-red-500 hover:cursor-pointer rounded-xl transition-all disabled:opacity-0"
                                                     >
                                                         <Trash2 size={18} />
                                                     </button>
@@ -237,11 +237,11 @@ export default function AdminDashboard() {
                         <table className="w-full border-collapse">
                             <thead>
                                 <tr className="bg-black/5">
-                                    <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest text-black/40">Article</th>
-                                    <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest text-black/40">Author</th>
-                                    <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest text-black/40">Category</th>
-                                    <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest text-black/40">Date</th>
-                                    <th className="px-8 py-5 text-right text-[10px] font-black uppercase tracking-widest text-black/40">Actions</th>
+                                    <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest text-black">Article</th>
+                                    <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest text-black">Author</th>
+                                    <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest text-black">Category</th>
+                                    <th className="px-8 py-5 text-left text-[10px] font-black uppercase tracking-widest text-black">Date</th>
+                                    <th className="px-8 py-5 text-right text-[10px] font-black uppercase tracking-widest text-black">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-black/5">
@@ -252,28 +252,28 @@ export default function AdminDashboard() {
                                             <td className="px-8 py-6 max-w-xs">
                                                 <span className="font-black line-clamp-1">{a.title}</span>
                                             </td>
-                                            <td className="px-8 py-6 text-sm text-black/60 font-medium">
+                                            <td className="px-8 py-6 text-sm text-black font-medium">
                                                 {a.author?.name || 'Deleted User'}
                                             </td>
                                             <td className="px-8 py-6">
-                                                <span className="px-3 py-1 bg-black/5 rounded-full text-[10px] font-black uppercase tracking-widest text-black/40">
+                                                <span className="px-3 py-1 bg-black/5 rounded-full text-[10px] font-black uppercase tracking-widest text-black">
                                                     {a.category || '-'}
                                                 </span>
                                             </td>
-                                            <td className="px-8 py-6 text-xs text-black/40 font-bold">
+                                            <td className="px-8 py-6 text-xs text-black font-bold">
                                                 {new Date(a.createdAt).toLocaleDateString()}
                                             </td>
                                             <td className="px-8 py-6 text-right">
                                                 <div className="flex items-center justify-end gap-2">
                                                     <button
                                                         onClick={() => router.push(`/articles/${a._id}`)}
-                                                        className="p-3 text-black/10 hover:text-black hover:bg-black/5 rounded-xl transition-all"
+                                                        className="p-3 text-black hover:text-black hover:bg-black/5 rounded-xl transition-all"
                                                     >
                                                         <Eye size={18} />
                                                     </button>
                                                     <button
                                                         onClick={() => handleDeleteArticle(a._id)}
-                                                        className="p-3 text-black/10 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                                                        className="p-3 text-[#FF0000] hover:text-[#FF0000] hover:bg-[#FF0000] hover:cursor-pointer hover:text-white rounded-xl transition-all"
                                                     >
                                                         <Trash2 size={18} />
                                                     </button>
@@ -302,7 +302,7 @@ export default function AdminDashboard() {
                         onClick={() => setSelectedUser(null)}
                     />
                     <div className="relative w-full max-w-lg bg-white rounded-[3rem] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
-                        <div className="p-8 border-b border-black/5 flex items-center justify-between bg-black text-white">
+                        <div className="p-8 border-b border-black/5 flex items-center justify-between bg-[#254F22] text-white">
                             <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center font-black text-xl">
                                     {selectedUser.name.charAt(0)}
@@ -321,30 +321,30 @@ export default function AdminDashboard() {
                             <div className="grid grid-cols-2 gap-6">
                                 <div className="space-y-1">
                                     <label className="text-[10px] font-black uppercase tracking-widest text-black/30">Email Address</label>
-                                    <p className="font-bold text-sm truncate">{selectedUser.email}</p>
+                                    <p className="font-bold text-sm truncate">{selectedUser?.email}</p>
                                 </div>
                                 <div className="space-y-1">
                                     <label className="text-[10px] font-black uppercase tracking-widest text-black/30">Age / Gender</label>
-                                    <p className="font-bold text-sm">{selectedUser.age || '-'} / {selectedUser.gender || 'Not set'}</p>
+                                    <p className="font-bold text-sm">{selectedUser?.age || '-'} / {selectedUser?.gender || 'Not set'}</p>
                                 </div>
                                 <div className="space-y-1">
                                     <label className="text-[10px] font-black uppercase tracking-widest text-black/30">Location</label>
-                                    <p className="font-bold text-sm">{selectedUser.city || 'Unknown'}, {selectedUser.country || '-'}</p>
+                                    <p className="font-bold text-sm">{selectedUser?.city || 'Unknown'}, {selectedUser?.country || '-'}</p>
                                 </div>
                                 <div className="space-y-1">
                                     <label className="text-[10px] font-black uppercase tracking-widest text-black/30">Joined On</label>
-                                    <p className="font-bold text-sm">{new Date(selectedUser.createdAt).toLocaleDateString()}</p>
+                                    <p className="font-bold text-sm">{new Date(selectedUser?.createdAt).toLocaleDateString()}</p>
                                 </div>
                             </div>
 
                             <div className="pt-6 border-t border-black/5 flex items-center gap-4">
-                                <div className="flex-1 p-4 bg-black/5 rounded-2xl">
+                                <div className="flex-1 p-4 bg-black rounded-2xl">
                                     <div className="flex items-center justify-between mb-1">
-                                        <span className="text-[10px] font-black uppercase text-black/30">Total Posts</span>
-                                        <FileText size={14} className="text-black/20" />
+                                        <span className="text-[10px] font-black uppercase text-white">Total Posts</span>
+                                        <FileText size={14} className="text-white" />
                                     </div>
                                     <p className="text-2xl font-black">
-                                        {allArticles.filter(a => (a.author?._id || a.author) === selectedUser._id).length}
+                                        {allArticles.filter(a => (a?.author?._id || a?.author) === selectedUser._id).length}
                                     </p>
                                 </div>
                                 <button

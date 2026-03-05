@@ -11,12 +11,13 @@ import {
     Share2,
     MessageCircle,
     MapPin,
-    Eye
+    Eye,
 } from "lucide-react";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import api from "@/app/utils/api";
 import Image from "next/image";
+import Loader from "@/app/loading";
 
 export default function ArticleDetail() {
     const { id } = useParams();
@@ -40,119 +41,122 @@ export default function ArticleDetail() {
         if (id) fetchArticle();
     }, [id, router]);
 
-    if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="w-12 h-12 border-4 border-black/10 border-t-black rounded-full animate-spin" />
-            </div>
-        );
-    }
-
+    if (loading) return <Loader />;
     if (!article) return null;
 
     return (
-        <main className="pt-32 pb-24 bg-white min-h-screen">
-            <div className="container mx-auto px-4 md:px-6 max-w-4xl">
-                {/* Back Link */}
+        <main className="grow pt-16 md:pt-24 pb-16 md:pb-24 bg-[#D6E6E6]">
+            <div className="container mx-auto px-4 md:px-6 max-w-7xl">
+                {/* Back Link Overlay */}
                 <Link
                     href="/articles"
-                    className="inline-flex items-center gap-2 text-black/40 hover:text-black font-bold mb-10 transition-colors group"
+                    className="inline-flex items-center gap-2 text-[#5C5C54] font-black uppercase text-[10px] tracking-widest mb-8 hover:opacity-100 opacity-60 transition-all group"
                 >
-                    <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-                    Back to Articles
+                    <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+                    Return to Archive
                 </Link>
 
-                {/* Article Header */}
-                <header className="mb-12">
-                    <div className="flex flex-wrap items-center gap-4 mb-6">
-                        <span className="px-5 py-2 bg-black text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg">
-                            {article.category || article.tags?.[0] || 'Philosophy'}
-                        </span>
-                        <div className="flex items-center gap-2 text-black/40 text-xs font-bold bg-black/5 px-4 py-2 rounded-full">
-                            <Calendar size={14} />
-                            {new Date(article.createdAt).toLocaleDateString()}
-                        </div>
-                        <div className="flex items-center gap-2 text-black/40 text-xs font-bold bg-black/5 px-4 py-2 rounded-full">
-                            <Eye size={14} />
-                            {article.viewCount || 0} views
-                        </div>
-                    </div>
-
-                    <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-8 leading-[1.1]">
-                        {article.title}
-                    </h1>
-
-                    <div className="flex items-center justify-between p-6 bg-black/5 rounded-[2rem] border border-black/5">
-                        <div className="flex items-center gap-4">
-                            <div className="w-14 h-14 bg-black rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-xl">
-                                {article.author?.name?.charAt(0) || 'A'}
+                {/* Main Article Canvas */}
+                <div className="bg-[#F3F0E6] rounded-[3.5rem] shadow-2xl border border-white/20 overflow-hidden">
+                    {/* Header Section */}
+                    <header className="pt-16 pb-12 px-8 md:px-20 flex flex-col items-center text-center">
+                        {/* Center Header Image */}
+                        {article.image && (
+                            <div className="w-48 h-48 md:w-64 md:h-64 rounded-[3rem] overflow-hidden border-[8px] border-white shadow-2xl mb-12 transform -rotate-2">
+                                <Image
+                                    src={article.image}
+                                    alt={article.title}
+                                    className="w-full h-full object-cover"
+                                    width={400}
+                                    height={400}
+                                />
                             </div>
-                            <div>
-                                <p className="font-black text-lg">{article.author?.name || 'Anonymous'}</p>
-                                <div className="flex items-center gap-3 text-black/40 text-xs font-bold mt-1">
-                                    {article.author?.city && (
-                                        <div className="flex items-center gap-1">
-                                            <MapPin size={12} />
-                                            {article.author.city}, {article.author.country}
-                                        </div>
-                                    )}
-                                    <div className="flex items-center gap-1">
-                                        <Clock size={12} />
-                                        5 min read
+                        )}
+
+                        <h1 className="text-4xl md:text-7xl font-black tracking-tighter mb-6 text-black leading-tight max-w-4xl">
+                            {article.title}
+                        </h1>
+
+                        <div className="flex flex-wrap items-center justify-center gap-2 text-[10px] md:text-xs font-bold text-black/40 uppercase tracking-widest mb-10">
+                            {article.tags?.slice(0, 3).map((tag: string) => (
+                                <span key={tag} className="text-emerald-700">#{tag}</span>
+                            ))}
+                            <span className="mx-2 opacity-20">•</span>
+                            <span>{new Date(article.createdAt).toLocaleDateString()}</span>
+                            <span className="mx-2 opacity-20">•</span>
+                            <span className="text-black font-black">{article.author?.name || 'Anonymous'}</span>
+                        </div>
+
+                        <p className="text-lg md:text-xl text-black/60 font-medium max-w-3xl leading-relaxed italic">
+                            {article.description?.split('.')[0]}.
+                        </p>
+                    </header>
+
+                    <div className="h-px w-full bg-black/5" />
+
+                    {/* Content Layout */}
+                    <div className="px-8 md:px-20 py-16 grid grid-cols-1 lg:grid-cols-12 gap-16">
+                        {/* Left Column: Philosophical Text */}
+                        <div className="lg:col-span-7 space-y-10">
+                            <div className="prose prose-xl prose-stone max-w-none">
+                                <p className="text-xl md:text-2xl text-black/80 leading-relaxed font-serif first-letter:text-6xl first-letter:font-black first-letter:text-stone-400 first-letter:mr-3 first-letter:float-left first-letter:leading-none">
+                                    {article.description}
+                                </p>
+
+                                {/* Philosophical Highlight */}
+                                <div className="my-16 pl-8 border-l-4 border-emerald-800/20 py-4">
+                                    <blockquote className="text-3xl md:text-4xl font-black tracking-tighter text-black leading-tight">
+                                        "Within stillness, the true nature of all things is revealed."
+                                    </blockquote>
+                                </div>
+
+                                <p className="text-xl md:text-2xl text-black/80 leading-relaxed font-serif">
+                                    {article.description}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Right Column: Wisdom Gallery */}
+                        <div className="lg:col-span-5 space-y-8">
+                            <div className="bg-white/40 backdrop-blur-sm rounded-[3rem] p-10 border border-white/50 shadow-xl">
+                                <div className="flex items-center justify-between mb-10">
+                                    <h3 className="text-2xl font-black tracking-tighter">Wisdom in Images</h3>
+                                    <div className="p-2 bg-black/5 rounded-full">
+                                        <Share2 size={16} />
                                     </div>
+                                </div>
+
+                                <div className="flex justify-between items-center gap-4">
+                                    {[1, 2, 3].map((i) => (
+                                        <div key={i} className="flex-1 aspect-square rounded-full border-4 border-white shadow-lg overflow-hidden relative group">
+                                            <Image
+                                                src={article.image || '/assets/logo.jpg'}
+                                                alt="wisdom"
+                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                                fill
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="p-10 border-2 border-dashed border-black/5 rounded-[3rem] flex flex-col items-center text-center space-y-4">
+                                <div className="w-16 h-16 bg-black rounded-2xl flex items-center justify-center text-white">
+                                    <UserIcon size={24} />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-black/40">About the Author</p>
+                                    <h4 className="text-xl font-black">{article.author?.name || 'Anonymous'}</h4>
+                                    <p className="text-sm font-medium text-black/60 mt-1">{article.author?.city}, {article.author?.country}</p>
                                 </div>
                             </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                            <button className="p-3 bg-white rounded-xl shadow-sm hover:scale-110 transition-all text-black/60 hover:text-black border border-black/5">
-                                <Share2 size={18} />
-                            </button>
-                        </div>
                     </div>
-                </header>
 
-                {/* Cover Image */}
-                {article.image && (
-                    <div className="relative w-full aspect-video rounded-[3rem] overflow-hidden mb-16 shadow-2xl border border-black/5">
-                        <img
-                            src={article.image}
-                            alt={article.title}
-                            className="w-full h-full object-cover"
-                        />
-                    </div>
-                )}
-
-                {/* Content */}
-                <article className="prose prose-xl max-w-none mb-16">
-                    <p className="text-xl md:text-2xl text-black/70 leading-relaxed font-medium mb-8">
-                        {article.description}
-                    </p>
-                    {/* In a real app, you'd render rich text content here. 
-                        Since we only have description for now, we'll use it as the main body. */}
-                    <div className="h-px w-full bg-black/5 my-12" />
-                    <div className="flex flex-wrap gap-3">
-                        {article.tags?.map((tag: string) => (
-                            <span key={tag} className="px-4 py-2 bg-black/5 text-black/60 rounded-xl text-sm font-bold border border-black/5">
-                                #{tag}
-                            </span>
-                        ))}
-                    </div>
-                </article>
-
-                {/* Footer Interaction */}
-                <div className="pt-12 border-t border-black/5 flex flex-col md:flex-row items-center justify-between gap-8">
-                    <div className="flex items-center gap-4">
-                        <h3 className="font-black text-xl">Enjoyed this article?</h3>
-                        <div className="flex items-center gap-2">
-                            <button className="px-6 py-3 bg-black text-white font-black rounded-2xl hover:scale-105 transition-all text-sm shadow-xl">
-                                Follow Author
-                            </button>
-                        </div>
-                    </div>
-                    <button className="flex items-center gap-3 text-black/40 hover:text-black font-bold transition-colors">
-                        <MessageCircle size={20} />
-                        View Comments (0)
-                    </button>
+                    {/* Canvas Footer */}
+                    <footer className="px-8 md:px-20 py-6 border-t border-black/5 flex justify-center text-[10px] font-black uppercase tracking-widest text-black/20">
+                        Sophia Circle | End of Wisdom
+                    </footer>
                 </div>
             </div>
         </main>

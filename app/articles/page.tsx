@@ -19,17 +19,19 @@ export const metadata: Metadata = {
 
 export default function ArticlesPage() {
   return (
-    <main className="grow pt-24 md:pt-32 pb-16 md:pb-24 bg-background">
-      <div className="container mx-auto px-4 md:px-6 max-w-5xl">
-        <div className="flex items-center gap-4 mb-8 md:mb-12">
-          <BookOpen className="text-black" size={48} />
-          <h1 className="text-5xl md:text-7xl font-black tracking-tighter">
+    <main className="grow pt-16 md:pt-24 pb-16 md:pb-24 bg-[#D6E6E6]">
+      <div className="container mx-auto px-4 md:px-6 max-w-7xl">
+        <div className="flex flex-col items-center mb-10 md:mb-16">
+          <h1 className="text-2xl md:text-[9rem] font-black tracking-tighter text-[#5C5C54] drop-shadow-[0_2px_2px_rgba(0,0,0,0.1)] uppercase leading-none">
             Articles
           </h1>
         </div>
-        <Suspense fallback={<Loader />}>
-          <Articles />
-        </Suspense>
+
+        <div className="bg-[#F0F5F5]/80 backdrop-blur-md rounded-[3rem] p-6 md:p-12 shadow-2xl border border-white/20 min-h-[60vh]">
+          <Suspense fallback={<Loader />}>
+            <Articles />
+          </Suspense>
+        </div>
       </div>
     </main>
   );
