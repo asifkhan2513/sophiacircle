@@ -20,7 +20,6 @@ cloudinaryConnect();
 
 const app = express();
 const PORT = Number(process.env.PORT) || 5000;
-const HOST = "0.0.0.0";
 
 // middlewares
 app.use(
@@ -64,8 +63,8 @@ app.use(
   }
 );
 
-app.listen(PORT, HOST, () => {
-  console.log(` Server running on http://${HOST}:${PORT}`);
+app.listen(PORT, () => {
+  console.log(` Server running on port ${PORT}`);
 });
 
 export default app;
