@@ -1,6 +1,5 @@
 "use client";
-
-import React, { useEffect, useState } from "react";
+import React, { lazy, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
     Calendar,
@@ -16,8 +15,9 @@ import {
 import Link from "next/link";
 import toast from "react-hot-toast";
 import api from "@/app/utils/api";
+import { getClientCache, setClientCache } from "@/app/utils/clientCache";
 import Image from "next/image";
-import Loader from "@/app/loading";
+const Loader = lazy(() => import("@/app/loading"));
 
 export default function ArticleDetail() {
     const { id } = useParams();
@@ -27,9 +27,24 @@ export default function ArticleDetail() {
 
     useEffect(() => {
         const fetchArticle = async () => {
+            const cacheKey = `article_detail_${id}`;
+            const cachedData = getClientCache<any>(cacheKey);
+
+            if (cachedData) {
+                setArticle(cachedData);
+                setLoading(false);
+                return;
+            }
+
             try {
                 const response = await api.get(`/articles/${id}`);
-                setArticle(response.data.article);
+                if (response.status !== 200) {
+                    toast.error("Please try again later");
+                    throw new Error("Failed to load article");
+                }
+                const data = response.data.article;
+                setArticle(data);
+                setClientCache(cacheKey, data, 3600); // Cache for 1 hour
             } catch (error: any) {
                 toast.error(error.response?.data?.message || "Failed to load article");
                 router.push("/articles");
@@ -62,10 +77,10 @@ export default function ArticleDetail() {
                 {/* Main Article Canvas */}
                 <div className="bg-[#F3F0E6] rounded-[3.5rem] shadow-2xl border border-white/20 overflow-hidden">
                     {/* Header Section */}
-                    <header className="pt-16 pb-12 px-8 md:px-20 flex flex-col items-center text-center">
+                    <header className="pt-5 pb-1 px-8 md:px-20 flex flex-col items-center text-center">
                         {/* Center Header Image */}
                         {article.image && (
-                            <div className="w-48 h-48 md:w-35 md:h-35 rounded-[3rem] overflow-hidden border-[8px] border-white shadow-2xl mb-12 transform -rotate-2">
+                            <div className="w-48 h-48 md:w-35 md:h-35 rounded-[3rem] overflow-hidden border-[8px] border-white shadow-2xl mb- transform -rotate-2">
                                 <Image
                                     src={article.image}
                                     alt={article.title}
@@ -75,7 +90,6 @@ export default function ArticleDetail() {
                                 />
                             </div>
                         )}
-
                         <h1 className="text-4xl md:text-2xl font-black tracking-tighter mb-6 text-black leading-tight max-w-4xl">
                             {article.title}
                         </h1>
@@ -87,7 +101,9 @@ export default function ArticleDetail() {
                                 </span>
                             ))}
                             <span className="mx-2 ">•</span>
-                            <span className="mx-2 text-black">{new Date(article.createdAt).toLocaleDateString()}</span>
+                            <span className="mx-2 text-black">
+                                {new Date(article.createdAt).toLocaleDateString()}
+                            </span>
                             <span className="mx-2 ">•</span>
                             <span className="text-black font-black">
                                 {article.author?.name || "Anonymous"}
@@ -95,8 +111,7 @@ export default function ArticleDetail() {
                         </div>
                     </header>
 
-                    <div className="h-px w-full bg-black/5" />
-
+                    <div className="h-px w-full bg-black/20" />
                     {/* Content Layout */}
                     <div className="px-8 md:px-20 py-16 grid grid-cols-1 lg:grid-cols-12 gap-16">
                         {/* Left Column: Philosophical Text */}
@@ -138,7 +153,7 @@ export default function ArticleDetail() {
                             </div>
 
                             <div className="p-10 border-2 border-dashed border-black/5 rounded-[3rem] flex flex-col items-center text-center space-y-4">
-                                <div className="w-16 h-16 bg-black rounded-2xl flex items-center justify-center text-white">
+                                <div className="w-16 h-16 bg-green-800 rounded-2xl flex items-center justify-center text-white">
                                     <UserIcon size={24} />
                                 </div>
                                 <div>

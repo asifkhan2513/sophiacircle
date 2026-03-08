@@ -3,6 +3,12 @@ import User from "../models/User";
 import Articles from "../models/Articles";
 import { uploadImageToCloudinary } from "../utils/imageUploader";
 import { UploadedFile } from "express-fileupload";
+import {
+  getCache,
+  setCache,
+  deleteCache,
+  deleteCachePattern,
+} from "../lib/cache";
 
 export const createArticles = async (req: Request, res: Response) => {
   try {
@@ -52,6 +58,9 @@ export const createArticles = async (req: Request, res: Response) => {
       tags: Array.isArray(tagsArray) ? tagsArray : [tagsArray],
       author: user._id,
     });
+
+    // Invalidate main list cache
+    await deleteCachePattern("all_articles_*");
 
     res.status(201).json({ success: true, article });
   } catch (error: any) {
@@ -122,6 +131,10 @@ export const updateArticles = async (req: Request, res: Response) => {
       { new: true }
     );
 
+    // Invalidate caches
+    await deleteCachePattern("all_articles_*");
+    await deleteCache(`article:${req.params.id}`);
+
     res.status(200).json({ success: true, article: updatedArticle });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });
@@ -156,6 +169,11 @@ export const deleteArticles = async (req: Request, res: Response) => {
     }
 
     await Articles.findByIdAndDelete(req.params.id);
+
+    // Invalidate caches
+    await deleteCachePattern("all_articles_*");
+    await deleteCache(`article:${req.params.id}`);
+
     res
       .status(200)
       .json({ success: true, message: "Article deleted successfully" });
@@ -166,8 +184,42 @@ export const deleteArticles = async (req: Request, res: Response) => {
 
 export const getAllArticles = async (req: Request, res: Response) => {
   try {
-    const articles = await Articles.find().populate("author", "name email");
-    res.status(200).json({ success: true, articles });
+    const page = Math.max(parseInt(req.query.page as string) || 1, 1);
+    const limit = Math.max(parseInt(req.query.limit as string) || 10, 1);
+
+    const skip = (page - 1) * limit;
+
+    // caching with pagination
+    const cacheKey = `all_articles_page_${page}_limit_${limit}`;
+    const cachedData = await getCache<any>(cacheKey);
+
+    if (cachedData) {
+      return res
+        .status(200)
+        .json({ success: true, ...cachedData, fromCache: true });
+    }
+
+    const articles = await Articles.find()
+      .populate("author", "name email")
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    const totalArticles = await Articles.countDocuments();
+
+    const responseData = {
+      articles,
+      page,
+      limit,
+      totalArticles,
+      totalPages: Math.ceil(totalArticles / limit),
+      data: articles,
+    };
+
+    // Cache for 1 hour
+    await setCache(cacheKey, responseData, { ttlSeconds: 3600 });
+
+    res.status(200).json({ success: true, ...responseData });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -191,7 +243,17 @@ export const getMyArticles = async (req: Request, res: Response) => {
 
 export const getArticleById = async (req: Request, res: Response) => {
   try {
-    const article = await Articles.findById(req.params.id).populate(
+    const { id } = req.params;
+    const cacheKey = `article:${id}`;
+
+    const cachedArticle = await getCache<any>(cacheKey);
+    if (cachedArticle) {
+      return res
+        .status(200)
+        .json({ success: true, article: cachedArticle, fromCache: true });
+    }
+
+    const article = await Articles.findById(id).populate(
       "author",
       "name email city country"
     );
@@ -200,6 +262,10 @@ export const getArticleById = async (req: Request, res: Response) => {
         .status(404)
         .json({ success: false, message: "Article not found" });
     }
+
+    // Cache for 1 hour
+    await setCache(cacheKey, article, { ttlSeconds: 3600 });
+
     res.status(200).json({ success: true, article });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });

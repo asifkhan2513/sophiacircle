@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function SignupPage() {
     return (
-        <main className="flex-grow pt-24 md:pt-32 pb-16 md:pb-24 bg-background">
+        <main className="grow pt-24 md:pt-32 pb-16 md:pb-24 bg-background">
             <Suspense fallback={<Loader />}>
                 <Signup />
             </Suspense>

@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setLoading, setToken, setUser, setError } from '../redux/features/auth/authSlice';
 import { RootState } from '../redux/store';
 import api from '../utils/api';
+import { GoogleLogin } from '@react-oauth/google';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -24,25 +25,40 @@ export default function Login() {
 
     try {
       const response = await api.post('/auth/login', { email, password });
-      // In UserControllers.ts, the login response is:
-      // {
-      //   success: true,
-      //   _id: user._id,
-      //   name: user.name,
-      //   email: user.email,
-      //   role: user.role,
-      //   token
-      // }
+      if (response.status !== 200) {
+        toast.error("Please Check your internet connection");
+        throw new Error("Failed to login");
+      }
       const { token, ...user } = response.data;
-
       dispatch(setToken(token));
       dispatch(setUser(user));
 
       toast.success(`Welcome back, ${user.name}!`);
-      router.push('/dashboard');
       router.refresh();
+      router.push('/dashboard');
     } catch (error: any) {
       const message = error.response?.data?.message || 'Login failed';
+      dispatch(setError(message));
+      toast.error(message);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse: any) => {
+    dispatch(setLoading(true));
+    try {
+      const res = await api.post("/auth/google", {
+        idToken: credentialResponse.credential,
+      });
+      const { token, user } = res.data;
+      dispatch(setToken(token));
+      dispatch(setUser(user));
+      toast.success("Google sign in successful!");
+      router.refresh();
+      router.push("/dashboard");
+    } catch (error: any) {
+      const message = error.response?.data?.message || "Google sign in failed";
       dispatch(setError(message));
       toast.error(message);
     } finally {
@@ -124,6 +140,26 @@ export default function Login() {
             )}
           </button>
         </form>
+
+        <div className="flex items-center justify-center mt-6 mb-4">
+          <div className="h-px bg-black/10 w-full"></div>
+          <span className="px-4 text-sm text-black/40 font-bold whitespace-nowrap">OR</span>
+          <div className="h-px bg-black/10 w-full"></div>
+        </div>
+
+        <div className="flex justify-center mt-2 overflow-hidden rounded-3xl">
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={() => {
+              toast.error('Google Sign-In Failed');
+            }}
+            theme="filled_black"
+            size="large"
+            shape="pill"
+            text="signin_with"
+            width="300"
+          />
+        </div>
 
         <div className="mt-8 text-center text-black/60 font-medium">
           Don't have an account?{' '}

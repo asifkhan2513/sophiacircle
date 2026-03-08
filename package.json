@@ -10,8 +10,10 @@
     "analyze": "cross-env ANALYZE=true cd server && next build"
   },
   "dependencies": {
+    "@react-oauth/google": "^0.13.4",
     "@reduxjs/toolkit": "^2.11.2",
     "axios": "^1.13.6",
+    "dotenv": "^17.3.1",
     "lucide-react": "^0.575.0",
     "next": "16.1.6",
     "react": "19.2.3",

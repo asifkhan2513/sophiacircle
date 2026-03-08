@@ -6,6 +6,7 @@ interface ArticleState {
   currentArticle: any | null;
   loading: boolean;
   error: string | null;
+  fromCache: boolean;
 }
 
 const initialState: ArticleState = {
@@ -14,6 +15,7 @@ const initialState: ArticleState = {
   currentArticle: null,
   loading: false,
   error: null,
+  fromCache: false,
 };
 
 const articleSlice = createSlice({
@@ -35,6 +37,9 @@ const articleSlice = createSlice({
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
     },
+    setFromCache: (state, action: PayloadAction<boolean>) => {
+      state.fromCache = action.payload;
+    },
   },
 });
 
@@ -44,5 +49,6 @@ export const {
   setMyArticles,
   setCurrentArticle,
   setError,
+  setFromCache,
 } = articleSlice.actions;
 export default articleSlice.reducer;

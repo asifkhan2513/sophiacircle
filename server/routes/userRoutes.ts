@@ -1,3 +1,4 @@
+import { AuthController } from "../controllers/auth.controller";
 import { Router } from "express";
 import { Request, Response } from "express";
 import {
@@ -36,5 +37,8 @@ router.post("/reset-password", resetPassword);
 
 router.post("/change-password", Auth, changePassword);
 router.post("/update-profile", Auth, updateProfile);
+
+//  for google signup
+router.post("/google", AuthController.googleSignup);
 
 export default router;

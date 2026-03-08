@@ -6,15 +6,24 @@ export interface IUser extends Document {
   email: string;
   password?: string;
   role: string;
-  age:number;
-  gender:string;
-  city:string;
-  country:string;
+  age: number;
+  gender: string;
+  city: string;
+  country: string;
+  avatar?: string;
+  provider: string;
+  emailVerified: boolean;
+  googleId?: string;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
 const UserSchema: Schema = new Schema(
   {
+    googleId: {
+      type: String,
+      unique: true,
+      index: true,
+    },
     name: {
       type: String,
       required: true,
@@ -30,7 +39,9 @@ const UserSchema: Schema = new Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: function (this: any) {
+        return this.provider !== "google";
+      },
       select: false,
       minlength: 8,
     },
@@ -54,6 +65,18 @@ const UserSchema: Schema = new Schema(
     country: {
       type: String,
       required: false,
+    },
+    avatar: {
+      type: String,
+      required: false,
+    },
+    provider: {
+      type: String,
+      default: "local",
+    },
+    emailVerified: {
+      type: Boolean,
+      default: false,
     },
   },
   {

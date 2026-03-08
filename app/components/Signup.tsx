@@ -1,5 +1,5 @@
 "use client";
-
+import Google from "@/public/assests/googleicon.svg"
 import React, { useState } from "react";
 import {
     Mail,
@@ -10,7 +10,8 @@ import {
     Eye,
     EyeOff,
     KeyRound,
-    ArrowLeft
+    ArrowLeft,
+    Handshake,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -18,9 +19,10 @@ import toast from "react-hot-toast";
 import { siteConfig } from "../config";
 import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
-import { setLoading, setError } from "../redux/features/auth/authSlice";
+import { setLoading, setError, setUser, setToken } from "../redux/features/auth/authSlice";
 import { RootState } from "../redux/store";
 import api from "../utils/api";
+import { GoogleLogin } from '@react-oauth/google';
 
 export default function Signup() {
     const [step, setStep] = useState(1);
@@ -96,11 +98,32 @@ export default function Signup() {
         }
     };
 
+    const handleGoogleSuccess = async (credentialResponse: any) => {
+        dispatch(setLoading(true));
+        try {
+            const res = await api.post("/auth/google", {
+                idToken: credentialResponse.credential,
+            });
+            const { token, user } = res.data;
+            dispatch(setToken(token));
+            dispatch(setUser(user));
+            toast.success("Google signup successful!");
+            router.refresh();
+            router.push("/dashboard");
+        } catch (error: any) {
+            const message = error.response?.data?.message || "Google signup failed";
+            dispatch(setError(message));
+            toast.error(message);
+        } finally {
+            dispatch(setLoading(false));
+        }
+    };
+
     return (
         <div className="w-full max-w-2xl mx-auto">
-            <div className="bg-white p-8 md:p-12 rounded-[3rem] shadow-2xl border border-black/5">
+            <div className="bg-white p-8 md:p-8 rounded-[3rem] shadow-2xl border border-black/5">
                 <div className="flex flex-col items-center mb-10">
-                    <div className="w-16 h-16 rounded-2xl overflow-hidden mb-6 shadow-xl">
+                    <div className="w-16 h-16 rounded-full overflow-hidden  shadow-xl animate-spin">
                         <Image
                             src={siteConfig.logo}
                             alt="Logo"
@@ -114,29 +137,34 @@ export default function Signup() {
                         {step === 1 ? "Join Sophia Circle" : "Verify Your Account"}
                     </h2>
                     <p className="text-black/60 font-medium text-center">
-                        {step === 1 ? "Start your philosophical journey today" : `We've sent a code to ${formData.email}`}
+                        {step === 1
+                            ? "Start your philosophical journey today"
+                            : `We've sent a code to ${formData.email}`}
                     </p>
                 </div>
 
                 {step === 1 ? (
                     <form onSubmit={handleSendOtp} className="space-y-6">
                         <div className="space-y-2">
-                            <label className="text-sm font-bold ml-1 text-black" htmlFor="email">
-                                Email Address
+                            <label
+                                className="text-sm font-bold ml-1 text-black"
+                                htmlFor="email"
+                            >
+                                Email Address <span className="text-red-800 pl-1">*</span>
                             </label>
                             <div className="relative group">
                                 <Mail
-                                    className="absolute left-4 top-1/2 -translate-y-1/2 text-black/40 group-focus-within:text-black transition-colors"
+                                    className="absolute left-4 top-1/2 -translate-y-1/2 text-black group-focus-within:text-black transition-colors"
                                     size={20}
                                 />
                                 <input
                                     id="email"
                                     type="email"
-                                    placeholder="john@example.com"
+                                    placeholder="yourmail@example.com"
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
-                                    className="w-full pl-12 pr-4 py-4 bg-black/5 border-none rounded-2xl focus:ring-2 focus:ring-black outline-none transition-all font-medium"
+                                    className="w-full pl-12 pr-4 py-4 bg-black/5 border-2 border-black/20 rounded-2xl focus:ring-2 focus:ring-black outline-none transition-all font-medium"
                                 />
                             </div>
                         </div>
@@ -144,7 +172,7 @@ export default function Signup() {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full py-5 bg-black text-white font-bold rounded-[1.5rem] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-3 shadow-2xl disabled:opacity-70 disabled:hover:scale-100 cursor-pointer"
+                            className="w-full py-5 bg-[#004445] text-white rounded-3xl hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-3 shadow-2xl disabled:opacity-70 disabled:hover:scale-100 cursor-pointer"
                         >
                             {isLoading ? (
                                 <div className="w-7 h-7 border-3 border-white/30 border-t-white rounded-full animate-spin" />
@@ -156,9 +184,15 @@ export default function Signup() {
                         </button>
                     </form>
                 ) : (
-                    <form onSubmit={handleSignup} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <form
+                        onSubmit={handleSignup}
+                        className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                    >
                         <div className="space-y-2 md:col-span-2">
-                            <label className="text-sm font-bold ml-1 text-black" htmlFor="name">
+                            <label
+                                className="text-sm font-bold ml-1 text-black"
+                                htmlFor="name"
+                            >
                                 Full Name
                             </label>
                             <div className="relative group">
@@ -179,7 +213,10 @@ export default function Signup() {
                         </div>
 
                         <div className="space-y-2 md:col-span-2">
-                            <label className="text-sm font-bold ml-1 text-black" htmlFor="otp">
+                            <label
+                                className="text-sm font-bold ml-1 text-black"
+                                htmlFor="otp"
+                            >
                                 Verification Code (OTP)
                             </label>
                             <div className="relative group">
@@ -201,7 +238,10 @@ export default function Signup() {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm font-bold ml-1 text-black" htmlFor="password">
+                            <label
+                                className="text-sm font-bold ml-1 text-black"
+                                htmlFor="password"
+                            >
                                 Password
                             </label>
                             <div className="relative group">
@@ -229,7 +269,10 @@ export default function Signup() {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm font-bold ml-1 text-black" htmlFor="confirmPassword">
+                            <label
+                                className="text-sm font-bold ml-1 text-black"
+                                htmlFor="confirmPassword"
+                            >
                                 Confirm Password
                             </label>
                             <div className="relative group">
@@ -251,7 +294,11 @@ export default function Signup() {
                                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                                     className="absolute right-4 top-1/2 -translate-y-1/2 text-black/40 hover:text-black transition-colors"
                                 >
-                                    {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                    {showConfirmPassword ? (
+                                        <EyeOff size={20} />
+                                    ) : (
+                                        <Eye size={20} />
+                                    )}
                                 </button>
                             </div>
                         </div>
@@ -278,10 +325,31 @@ export default function Signup() {
                                 <ArrowLeft size={18} /> Use different email
                             </button>
                         </div>
+
                     </form>
                 )}
 
-                <div className="mt-10 text-center text-black/60 font-medium">
+                <div className="flex items-center justify-center mt-6 mb-4">
+                    <div className="h-px bg-black/10 w-full"></div>
+                    <span className="px-4 text-sm text-black/40 font-bold whitespace-nowrap">OR</span>
+                    <div className="h-px bg-black/10 w-full"></div>
+                </div>
+
+                <div className="flex justify-center mt-2 overflow-hidden rounded-3xl">
+                    <GoogleLogin
+                        onSuccess={handleGoogleSuccess}
+                        onError={() => {
+                            toast.error('Google Sign-In Failed');
+                        }}
+                        theme="filled_black"
+                        size="large"
+                        shape="pill"
+                        text="signup_with"
+                        width="300"
+                    />
+                </div>
+
+                <div className="mt-8 text-center text-black/60 font-medium">
                     Already have an account?{" "}
                     <Link
                         href="/login"
