@@ -3,12 +3,12 @@ import User from "../models/User";
 import Articles from "../models/Articles";
 import { uploadImageToCloudinary } from "../utils/imageUploader";
 import { UploadedFile } from "express-fileupload";
-import {
-  getCache,
-  setCache,
-  deleteCache,
-  deleteCachePattern,
-} from "../lib/cache";
+// import {
+//   getCache,
+//   setCache,
+//   deleteCache,
+//   deleteCachePattern,
+// } from "../lib/cache";
 
 export const createArticles = async (req: Request, res: Response) => {
   try {
@@ -60,7 +60,8 @@ export const createArticles = async (req: Request, res: Response) => {
     });
 
     // Invalidate main list cache
-    await deleteCachePattern("all_articles_*");
+
+    // await deleteCachePattern("all_articles_*");
 
     res.status(201).json({ success: true, article });
   } catch (error: any) {
@@ -132,8 +133,8 @@ export const updateArticles = async (req: Request, res: Response) => {
     );
 
     // Invalidate caches
-    await deleteCachePattern("all_articles_*");
-    await deleteCache(`article:${req.params.id}`);
+    // await deleteCachePattern("all_articles_*");
+    // await deleteCache(`article:${req.params.id}`);
 
     res.status(200).json({ success: true, article: updatedArticle });
   } catch (error: any) {
@@ -171,8 +172,8 @@ export const deleteArticles = async (req: Request, res: Response) => {
     await Articles.findByIdAndDelete(req.params.id);
 
     // Invalidate caches
-    await deleteCachePattern("all_articles_*");
-    await deleteCache(`article:${req.params.id}`);
+    // await deleteCachePattern("all_articles_*");
+    // await deleteCache(`article:${req.params.id}`);
 
     res
       .status(200)
@@ -190,14 +191,14 @@ export const getAllArticles = async (req: Request, res: Response) => {
     const skip = (page - 1) * limit;
 
     // caching with pagination
-    const cacheKey = `all_articles_page_${page}_limit_${limit}`;
-    const cachedData = await getCache<any>(cacheKey);
+    // const cacheKey = `all_articles_page_${page}_limit_${limit}`;
+    // const cachedData = await getCache<any>(cacheKey);
 
-    if (cachedData) {
-      return res
-        .status(200)
-        .json({ success: true, ...cachedData, fromCache: true });
-    }
+    // if (cachedData) {
+    //   return res
+    //     .status(200)
+    //     .json({ success: true, ...cachedData, fromCache: true });
+    // }
 
     const articles = await Articles.find()
       .populate("author", "name email")
@@ -217,7 +218,7 @@ export const getAllArticles = async (req: Request, res: Response) => {
     };
 
     // Cache for 1 hour
-    await setCache(cacheKey, responseData, { ttlSeconds: 3600 });
+    // await setCache(cacheKey, responseData, { ttlSeconds: 3600 });
 
     res.status(200).json({ success: true, ...responseData });
   } catch (error: any) {
@@ -246,12 +247,12 @@ export const getArticleById = async (req: Request, res: Response) => {
     const { id } = req.params;
     const cacheKey = `article:${id}`;
 
-    const cachedArticle = await getCache<any>(cacheKey);
-    if (cachedArticle) {
-      return res
-        .status(200)
-        .json({ success: true, article: cachedArticle, fromCache: true });
-    }
+    // const cachedArticle = await getCache<any>(cacheKey);
+    // if (cachedArticle) {
+    //   return res
+    //     .status(200)
+    //     .json({ success: true, article: cachedArticle, fromCache: true });
+    // }
 
     const article = await Articles.findById(id).populate(
       "author",
@@ -264,7 +265,7 @@ export const getArticleById = async (req: Request, res: Response) => {
     }
 
     // Cache for 1 hour
-    await setCache(cacheKey, article, { ttlSeconds: 3600 });
+    // await setCache(cacheKey, article, { ttlSeconds: 3600 });
 
     res.status(200).json({ success: true, article });
   } catch (error: any) {
