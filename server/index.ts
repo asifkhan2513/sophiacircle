@@ -10,16 +10,10 @@ import articleRoutes from "./routes/articleRoutes";
 import adminRoutes from "./routes/adminRoutes";
 import os from "os";
 
-// Load environment variables
 dotenv.config();
 
-// Connect to Database
-connectDB();
-// Connect to Cloudinary
-cloudinaryConnect();
-
 const app = express();
-const PORT = Number(process.env.PORT) || 5000;
+const PORT = Number(process.env.PORT) || 10000;
 
 // middlewares
 app.use(
@@ -28,6 +22,7 @@ app.use(
     credentials: true,
   })
 );
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(
@@ -43,28 +38,52 @@ app.use("/api/v1/articles", articleRoutes);
 app.use("/api/v1/admin", adminRoutes);
 
 // health route
-app.get("/", (req, res) => {
+app.get("/", (_req, res) => {
   res.json({ success: true, message: "Backend is running" });
 });
 
-// Error handling middleware
+// error handling middleware
 app.use(
   (
-    err: any,
-    req: express.Request,
+    err: unknown,
+    _req: express.Request,
     res: express.Response,
-    next: express.NextFunction
+    _next: express.NextFunction
   ) => {
-    console.error(err.stack);
-    res.status(500).json({
-      success: false,
-      message: err.message || "Internal Server Error",
-    });
+    if (err instanceof Error) {
+      console.error(err.stack);
+      res.status(500).json({
+        success: false,
+        message: err.message,
+      });
+    } else {
+      console.error("Unknown error:", err);
+      res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+      });
+    }
   }
 );
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(` Server running on port ${PORT}`);
-});
+const startServer = async (): Promise<void> => {
+  try {
+    await connectDB();
+    await cloudinaryConnect();
+
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Startup error:", error.message);
+    } else {
+      console.error("Startup error:", error);
+    }
+    process.exit(1);
+  }
+};
+
+startServer();
 
 export default app;
