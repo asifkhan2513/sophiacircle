@@ -66,24 +66,27 @@ app.use(
   }
 );
 
-const startServer = async (): Promise<void> => {
+// Start listening immediately so Render can detect the open port.
+// DB and Cloudinary connect in the background after the server is up.
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
+const initServices = async (): Promise<void> => {
   try {
     await connectDB();
     await cloudinaryConnect();
-
-    app.listen(PORT, "0.0.0.0", () => {
-      console.log(`Server running on port ${PORT}`);
-    });
+    console.log("All services connected successfully");
   } catch (error: unknown) {
     if (error instanceof Error) {
-      console.error("Startup error:", error.message);
+      console.error("Service initialization error:", error.message);
     } else {
-      console.error("Startup error:", error);
+      console.error("Service initialization error:", error);
     }
     process.exit(1);
   }
 };
 
-startServer();
+initServices();
 
 export default app;
