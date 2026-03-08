@@ -1,1 +1,0 @@
-// for controlling abuse and bad comments
