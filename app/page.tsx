@@ -112,7 +112,7 @@ export default function Home() {
               href="/explore"
               className="w-full sm:w-auto px-8 md:px-10 py-4 md:py-5 bg-white text-black font-bold rounded-2xl hover:scale-105 transition-all duration-300 shadow-2xl"
             >
-              Explore Philosophers
+              Come Here
             </Link>
 
             <Link
